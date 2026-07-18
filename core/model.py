@@ -1,6 +1,6 @@
 """通义千问模型初始化（DashScope）— 单例模式"""
 from langchain_community.chat_models.tongyi import ChatTongyi
-from backend.core.config import settings
+from core.config import settings
 
 _model = None
 

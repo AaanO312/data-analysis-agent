@@ -3,12 +3,12 @@ import pandas as pd
 import json
 import os
 import re
-from backend.agents.state import AgentState
-from backend.core.model import get_model
-from backend.agents.few_shot import match_examples
-from backend.tools.sql_tool import csv_to_sqlite, execute_sql, explain_sql
-from backend.tools.pandas_tool import analyze_data, choose_chart_type, generate_chart_base64
-from backend.utils.logger import logger
+from agents.state import AgentState
+from core.model import get_model
+from agents.few_shot import match_examples
+from tools.sql_tool import csv_to_sqlite, execute_sql, explain_sql
+from tools.pandas_tool import analyze_data, choose_chart_type, generate_chart_base64
+from utils.logger import logger
 
 
 # ==================== Prompt 加载（仅一份） ====================

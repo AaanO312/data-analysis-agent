@@ -1,8 +1,8 @@
 """LangGraph 工作流：Supervisor 模式编排 — 通用数据分析 Agent"""
 from langgraph.graph import StateGraph, END
 from langgraph.checkpoint.memory import MemorySaver
-from backend.agents.state import AgentState
-from backend.agents.nodes import (
+from agents.state import AgentState
+from agents.nodes import (
     data_understanding_node,
     nl2sql_node,
     sql_validator_node,

@@ -10,7 +10,7 @@ import uvicorn
 
 def start_backend():
     """在后台线程启动 FastAPI"""
-    uvicorn.run("backend.main:app", host="0.0.0.0", port=8000, log_level="info")
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, log_level="info")
 
 
 def main():
@@ -41,7 +41,7 @@ def main():
     print("=" * 50)
 
     # 前台启动 Streamlit
-    subprocess.run([sys.executable, "-m", "streamlit", "run", "frontend/app.py", "--server.port", "8501"])
+    subprocess.run([sys.executable, "-m", "streamlit", "run", "app.py", "--server.port", "8501"])
 
 
 if __name__ == "__main__":

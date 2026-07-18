@@ -1,7 +1,7 @@
 import sqlite3
 import pandas as pd
 import json
-from backend.utils.logger import logger
+from utils.logger import logger
 
 
 # 全局内存数据库连接（会话级别）

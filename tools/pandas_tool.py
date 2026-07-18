@@ -7,7 +7,7 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
-from backend.utils.logger import logger
+from utils.logger import logger
 
 
 # ==================== 中文字体设置 ====================
