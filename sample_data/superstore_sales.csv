@@ -1,0 +1,201 @@
+OrderID,OrderDate,ShipDate,ShipMode,CustomerID,CustomerName,Segment,Country,City,State,Region,Category,SubCategory,ProductName,Sales,Quantity,Discount,Profit
+ORD-2023001,2023-03-13,2023-03-18,Same Day,CUST-1871,Customer_251,Home Office,United States,City_22,State_2,West,Technology,Machines,Product_7949,35.26,7,0.0,11.74
+ORD-2023002,2023-11-10,2023-11-16,Same Day,CUST-1699,Customer_370,Corporate,United States,City_47,State_19,East,Technology,Phones,Product_2899,1740.64,9,0.0,399.32
+ORD-2023003,2023-11-03,2023-11-08,Standard,CUST-1345,Customer_152,Corporate,United States,City_20,State_15,West,Office Supplies,Art,Product_8099,104.37,9,0.4,31.75
+ORD-2023004,2023-07-25,2023-07-26,Second,CUST-1105,Customer_359,Corporate,United States,City_29,State_18,East,Office Supplies,Art,Product_7873,157.17,4,0.0,39.76
+ORD-2023005,2023-09-27,2023-10-03,Standard,CUST-1763,Customer_287,Consumer,United States,City_41,State_15,West,Office Supplies,Storage,Product_1064,44.22,2,0.1,8.55
+ORD-2023006,2023-05-16,2023-05-19,Standard,CUST-1489,Customer_330,Corporate,United States,City_41,State_7,East,Office Supplies,Paper,Product_9392,29.75,3,0.2,5.87
+ORD-2023007,2023-04-09,2023-04-13,First,CUST-1768,Customer_104,Corporate,United States,City_14,State_7,Central,Office Supplies,Appliances,Product_7938,404.14,1,0.0,155.94
+ORD-2023008,2023-06-28,2023-06-29,Standard,CUST-1406,Customer_330,Consumer,United States,City_15,State_11,West,Office Supplies,Binders,Product_5636,211.85,4,0.1,52.49
+ORD-2023009,2023-08-31,2023-09-06,Same Day,CUST-1797,Customer_430,Corporate,United States,City_28,State_7,East,Furniture,Bookcases,Product_8392,201.03,9,0.0,27.06
+ORD-2023010,2023-04-26,2023-05-01,Second,CUST-1676,Customer_324,Home Office,United States,City_42,State_12,East,Office Supplies,Paper,Product_1663,510.95,9,0.0,-7.69
+ORD-2023011,2023-06-29,2023-06-30,Standard,CUST-1951,Customer_180,Home Office,United States,City_49,State_2,South,Office Supplies,Paper,Product_5737,145.68,7,0.0,7.35
+ORD-2023012,2023-08-13,2023-08-14,Second,CUST-1671,Customer_297,Home Office,United States,City_4,State_11,West,Furniture,Furnishings,Product_5218,143.62,3,0.1,23.76
+ORD-2023013,2023-04-08,2023-04-14,First,CUST-1659,Customer_351,Home Office,United States,City_36,State_19,East,Technology,Phones,Product_2986,823.88,1,0.0,98.64
+ORD-2023014,2023-05-08,2023-05-10,Standard,CUST-1945,Customer_250,Home Office,United States,City_30,State_10,South,Office Supplies,Storage,Product_1262,93.0,8,0.0,6.56
+ORD-2023015,2023-03-01,2023-03-02,Standard,CUST-1232,Customer_198,Home Office,United States,City_48,State_16,Central,Technology,Phones,Product_2154,100.55,5,0.3,21.77
+ORD-2023016,2023-04-26,2023-04-29,Same Day,CUST-1253,Customer_326,Corporate,United States,City_25,State_3,South,Office Supplies,Paper,Product_3200,115.93,1,0.0,40.49
+ORD-2023017,2023-07-13,2023-07-19,Same Day,CUST-1503,Customer_483,Home Office,United States,City_3,State_17,East,Furniture,Tables,Product_5735,182.76,4,0.2,3.31
+ORD-2023018,2023-01-22,2023-01-28,Same Day,CUST-1282,Customer_126,Corporate,United States,City_21,State_1,Central,Furniture,Bookcases,Product_8022,145.64,6,0.4,20.88
+ORD-2023019,2023-10-31,2023-11-03,Second,CUST-1372,Customer_105,Home Office,United States,City_41,State_5,West,Furniture,Chairs,Product_3327,876.4,1,0.4,118.29
+ORD-2023020,2023-07-07,2023-07-08,First,CUST-1160,Customer_355,Home Office,United States,City_18,State_10,West,Office Supplies,Art,Product_6854,238.92,4,0.0,22.11
+ORD-2023021,2023-10-07,2023-10-09,Standard,CUST-1810,Customer_345,Home Office,United States,City_29,State_10,South,Technology,Accessories,Product_3806,159.15,2,0.0,51.62
+ORD-2023022,2023-01-13,2023-01-17,Standard,CUST-1775,Customer_499,Corporate,United States,City_12,State_19,West,Furniture,Furnishings,Product_7614,37.65,7,0.1,11.26
+ORD-2023023,2023-06-02,2023-06-04,First,CUST-1443,Customer_200,Consumer,United States,City_8,State_12,East,Office Supplies,Art,Product_1004,17.56,6,0.0,-1.4
+ORD-2023024,2023-12-16,2023-12-19,Second,CUST-1635,Customer_205,Corporate,United States,City_19,State_17,West,Technology,Copiers,Product_9311,227.87,7,0.0,-7.66
+ORD-2023025,2023-08-17,2023-08-19,Standard,CUST-1487,Customer_336,Consumer,United States,City_1,State_16,East,Office Supplies,Binders,Product_5070,50.89,1,0.0,1.17
+ORD-2023026,2023-09-04,2023-09-07,Second,CUST-1219,Customer_168,Home Office,United States,City_49,State_14,Central,Office Supplies,Appliances,Product_7617,1089.6,3,0.2,-101.12
+ORD-2023027,2023-09-11,2023-09-17,First,CUST-1905,Customer_349,Home Office,United States,City_32,State_1,West,Office Supplies,Paper,Product_5611,89.65,6,0.1,-6.93
+ORD-2023028,2023-06-09,2023-06-12,Same Day,CUST-1544,Customer_278,Home Office,United States,City_37,State_12,Central,Technology,Accessories,Product_9002,175.4,4,0.1,16.5
+ORD-2023029,2023-02-13,2023-02-18,Second,CUST-1417,Customer_214,Consumer,United States,City_7,State_4,South,Office Supplies,Art,Product_1825,82.79,8,0.0,19.94
+ORD-2023030,2023-08-05,2023-08-10,Same Day,CUST-1191,Customer_326,Consumer,United States,City_35,State_16,Central,Office Supplies,Appliances,Product_2571,190.4,9,0.1,21.27
+ORD-2023031,2023-05-31,2023-06-06,Standard,CUST-1797,Customer_372,Consumer,United States,City_20,State_16,West,Technology,Copiers,Product_1728,23.55,7,0.2,6.53
+ORD-2023032,2023-04-10,2023-04-14,Same Day,CUST-1717,Customer_322,Home Office,United States,City_47,State_16,West,Technology,Phones,Product_5980,229.45,9,0.2,17.77
+ORD-2023033,2023-02-22,2023-02-23,First,CUST-1173,Customer_240,Corporate,United States,City_9,State_18,East,Office Supplies,Storage,Product_7938,1139.15,9,0.2,273.55
+ORD-2023034,2023-12-05,2023-12-10,First,CUST-1216,Customer_400,Corporate,United States,City_31,State_19,Central,Furniture,Chairs,Product_7588,241.17,1,0.3,4.42
+ORD-2023035,2023-12-12,2023-12-15,Same Day,CUST-1455,Customer_416,Home Office,United States,City_41,State_7,West,Technology,Accessories,Product_4072,145.06,2,0.0,-10.42
+ORD-2023036,2023-07-10,2023-07-14,Standard,CUST-1133,Customer_157,Consumer,United States,City_32,State_13,Central,Furniture,Chairs,Product_2852,44.57,1,0.0,7.32
+ORD-2023037,2023-07-22,2023-07-26,Standard,CUST-1525,Customer_242,Home Office,United States,City_1,State_3,West,Furniture,Chairs,Product_3703,166.87,4,0.0,-2.82
+ORD-2023038,2023-08-12,2023-08-18,Same Day,CUST-1675,Customer_189,Corporate,United States,City_28,State_5,Central,Technology,Accessories,Product_5835,58.7,8,0.1,2.27
+ORD-2023039,2023-07-20,2023-07-21,Same Day,CUST-1708,Customer_402,Consumer,United States,City_2,State_10,South,Office Supplies,Paper,Product_3871,1180.03,3,0.2,442.39
+ORD-2023040,2023-04-29,2023-04-30,Standard,CUST-1778,Customer_440,Corporate,United States,City_25,State_17,South,Office Supplies,Appliances,Product_5000,24.75,6,0.2,9.74
+ORD-2023041,2023-11-07,2023-11-13,Standard,CUST-1564,Customer_264,Corporate,United States,City_10,State_19,West,Office Supplies,Paper,Product_8245,223.84,5,0.4,39.78
+ORD-2023042,2023-07-24,2023-07-28,Same Day,CUST-1550,Customer_253,Corporate,United States,City_34,State_3,East,Furniture,Chairs,Product_5363,1545.81,1,0.1,307.58
+ORD-2023043,2023-08-10,2023-08-13,Second,CUST-1074,Customer_202,Corporate,United States,City_34,State_6,South,Technology,Accessories,Product_7241,43.62,7,0.2,9.17
+ORD-2023044,2023-11-04,2023-11-05,Second,CUST-1758,Customer_205,Home Office,United States,City_17,State_5,Central,Office Supplies,Art,Product_5892,107.46,6,0.0,38.17
+ORD-2023045,2023-09-30,2023-10-04,First,CUST-1373,Customer_499,Consumer,United States,City_3,State_3,East,Technology,Accessories,Product_1666,28.85,3,0.1,3.1
+ORD-2023046,2023-02-20,2023-02-23,Standard,CUST-1533,Customer_425,Consumer,United States,City_5,State_9,Central,Furniture,Tables,Product_1523,630.87,5,0.0,24.79
+ORD-2023047,2023-10-28,2023-10-31,Standard,CUST-1691,Customer_306,Home Office,United States,City_22,State_14,East,Office Supplies,Binders,Product_9150,84.84,1,0.0,19.43
+ORD-2023048,2023-01-14,2023-01-17,First,CUST-1749,Customer_462,Home Office,United States,City_45,State_18,West,Technology,Accessories,Product_8673,191.86,8,0.0,46.73
+ORD-2023049,2023-04-29,2023-05-04,Same Day,CUST-1536,Customer_244,Consumer,United States,City_20,State_4,West,Office Supplies,Paper,Product_8561,202.74,1,0.0,12.92
+ORD-2023050,2023-04-21,2023-04-27,Same Day,CUST-1594,Customer_141,Consumer,United States,City_37,State_6,Central,Office Supplies,Storage,Product_3739,31.52,2,0.1,6.09
+ORD-2023051,2023-12-31,2024-01-06,Same Day,CUST-1515,Customer_449,Home Office,United States,City_30,State_9,Central,Office Supplies,Art,Product_9434,27.71,6,0.0,2.29
+ORD-2023052,2023-08-08,2023-08-11,Second,CUST-1946,Customer_161,Consumer,United States,City_2,State_15,East,Office Supplies,Binders,Product_7316,333.51,4,0.0,113.02
+ORD-2023053,2023-11-20,2023-11-23,Standard,CUST-1893,Customer_238,Home Office,United States,City_36,State_13,Central,Furniture,Tables,Product_3026,320.12,1,0.1,14.19
+ORD-2023054,2023-09-18,2023-09-20,Standard,CUST-1318,Customer_200,Consumer,United States,City_17,State_9,Central,Office Supplies,Binders,Product_2994,55.83,2,0.0,17.02
+ORD-2023055,2023-04-04,2023-04-05,Standard,CUST-1929,Customer_175,Home Office,United States,City_35,State_1,West,Office Supplies,Art,Product_6415,255.14,2,0.0,67.72
+ORD-2023056,2023-11-24,2023-11-27,First,CUST-1724,Customer_264,Consumer,United States,City_19,State_14,Central,Furniture,Chairs,Product_8577,321.36,9,0.2,96.33
+ORD-2023057,2023-03-30,2023-04-01,First,CUST-1142,Customer_252,Consumer,United States,City_33,State_15,South,Office Supplies,Binders,Product_5033,109.93,3,0.1,18.68
+ORD-2023058,2023-02-08,2023-02-11,Same Day,CUST-1553,Customer_114,Home Office,United States,City_29,State_1,West,Technology,Machines,Product_9669,707.16,6,0.3,151.23
+ORD-2023059,2023-04-07,2023-04-12,First,CUST-1841,Customer_452,Corporate,United States,City_38,State_13,South,Technology,Accessories,Product_8326,401.98,4,0.1,113.05
+ORD-2023060,2023-07-03,2023-07-08,Same Day,CUST-1684,Customer_229,Home Office,United States,City_31,State_19,West,Office Supplies,Storage,Product_7898,53.13,8,0.0,0.78
+ORD-2023061,2023-03-10,2023-03-14,First,CUST-1615,Customer_415,Home Office,United States,City_12,State_12,Central,Technology,Machines,Product_5451,17.56,8,0.1,3.61
+ORD-2023062,2023-11-24,2023-11-26,Second,CUST-1050,Customer_128,Corporate,United States,City_40,State_9,South,Technology,Phones,Product_4797,893.6,1,0.1,181.72
+ORD-2023063,2023-12-12,2023-12-18,Same Day,CUST-1910,Customer_248,Home Office,United States,City_9,State_9,South,Furniture,Chairs,Product_9393,245.33,1,0.3,39.11
+ORD-2023064,2023-10-18,2023-10-22,First,CUST-1209,Customer_446,Consumer,United States,City_43,State_12,South,Furniture,Chairs,Product_2205,93.02,9,0.3,33.62
+ORD-2023065,2023-12-10,2023-12-11,Standard,CUST-1083,Customer_460,Consumer,United States,City_20,State_8,East,Office Supplies,Appliances,Product_7704,629.87,6,0.0,3.44
+ORD-2023066,2023-07-30,2023-08-05,Second,CUST-1768,Customer_177,Home Office,United States,City_47,State_18,East,Office Supplies,Art,Product_7645,19.39,1,0.0,2.21
+ORD-2023067,2023-11-15,2023-11-19,First,CUST-1877,Customer_261,Consumer,United States,City_23,State_18,West,Office Supplies,Art,Product_4462,210.15,7,0.2,7.6
+ORD-2023068,2023-11-19,2023-11-22,First,CUST-1050,Customer_196,Home Office,United States,City_8,State_2,Central,Furniture,Bookcases,Product_8970,109.31,8,0.0,32.79
+ORD-2023069,2023-10-29,2023-11-01,First,CUST-1084,Customer_246,Consumer,United States,City_19,State_4,East,Technology,Copiers,Product_2308,91.65,7,0.3,-9.97
+ORD-2023070,2023-07-16,2023-07-20,Same Day,CUST-1260,Customer_392,Corporate,United States,City_30,State_9,West,Technology,Machines,Product_8083,41.72,2,0.0,-3.46
+ORD-2023071,2023-10-07,2023-10-08,Second,CUST-1520,Customer_139,Corporate,United States,City_45,State_7,East,Technology,Copiers,Product_8368,115.72,7,0.2,15.97
+ORD-2023072,2023-06-03,2023-06-05,Standard,CUST-1041,Customer_455,Consumer,United States,City_38,State_2,East,Technology,Copiers,Product_8184,803.21,2,0.0,-50.65
+ORD-2023073,2023-03-28,2023-04-02,Standard,CUST-1921,Customer_289,Corporate,United States,City_46,State_2,West,Office Supplies,Storage,Product_4067,1037.57,9,0.0,193.66
+ORD-2023074,2023-10-19,2023-10-22,Same Day,CUST-1112,Customer_286,Home Office,United States,City_40,State_3,South,Furniture,Chairs,Product_2333,977.1,5,0.2,115.88
+ORD-2023075,2023-11-08,2023-11-09,Second,CUST-1506,Customer_464,Home Office,United States,City_34,State_9,West,Office Supplies,Appliances,Product_1153,212.15,3,0.1,-15.76
+ORD-2023076,2023-05-09,2023-05-10,First,CUST-1497,Customer_328,Home Office,United States,City_30,State_6,West,Office Supplies,Paper,Product_8009,18.85,8,0.0,0.44
+ORD-2023077,2023-11-01,2023-11-06,Same Day,CUST-1990,Customer_248,Consumer,United States,City_23,State_5,East,Office Supplies,Art,Product_3421,464.44,1,0.0,56.27
+ORD-2023078,2023-03-30,2023-04-03,Second,CUST-1015,Customer_298,Consumer,United States,City_23,State_7,Central,Technology,Accessories,Product_5430,498.78,9,0.3,-40.05
+ORD-2023079,2023-11-24,2023-11-26,Second,CUST-1614,Customer_372,Corporate,United States,City_31,State_3,Central,Furniture,Furnishings,Product_3667,756.14,4,0.2,45.03
+ORD-2023080,2023-06-20,2023-06-22,Same Day,CUST-1348,Customer_496,Corporate,United States,City_33,State_16,East,Furniture,Chairs,Product_9684,131.4,7,0.0,17.95
+ORD-2023081,2023-08-15,2023-08-17,Standard,CUST-1957,Customer_417,Consumer,United States,City_44,State_16,Central,Furniture,Bookcases,Product_4511,87.78,3,0.0,-8.36
+ORD-2023082,2023-12-25,2023-12-29,Same Day,CUST-1669,Customer_423,Corporate,United States,City_37,State_16,East,Office Supplies,Paper,Product_9896,40.28,5,0.2,-3.51
+ORD-2023083,2023-11-01,2023-11-02,Second,CUST-1806,Customer_418,Corporate,United States,City_24,State_11,South,Furniture,Bookcases,Product_2868,41.07,5,0.2,-2.27
+ORD-2023084,2023-02-28,2023-03-04,Second,CUST-1106,Customer_325,Consumer,United States,City_26,State_9,South,Technology,Copiers,Product_7402,336.69,6,0.1,52.64
+ORD-2023085,2023-02-16,2023-02-17,Second,CUST-1849,Customer_161,Consumer,United States,City_24,State_3,South,Technology,Accessories,Product_8906,2987.04,1,0.0,293.09
+ORD-2023086,2023-03-30,2023-03-31,First,CUST-1634,Customer_128,Consumer,United States,City_3,State_2,East,Furniture,Bookcases,Product_1954,368.76,4,0.1,-14.15
+ORD-2023087,2023-11-24,2023-11-27,Standard,CUST-1592,Customer_213,Consumer,United States,City_32,State_19,East,Furniture,Tables,Product_3745,203.41,6,0.4,-6.46
+ORD-2023088,2023-08-25,2023-08-26,Same Day,CUST-1352,Customer_158,Home Office,United States,City_48,State_9,Central,Office Supplies,Art,Product_7924,1278.53,6,0.1,427.13
+ORD-2023089,2023-12-22,2023-12-25,Second,CUST-1671,Customer_462,Consumer,United States,City_30,State_7,South,Office Supplies,Binders,Product_4998,68.1,9,0.0,21.31
+ORD-2023090,2023-01-12,2023-01-14,Same Day,CUST-1855,Customer_464,Home Office,United States,City_48,State_6,East,Office Supplies,Appliances,Product_6352,281.02,1,0.1,-11.12
+ORD-2023091,2023-12-01,2023-12-07,First,CUST-1191,Customer_116,Corporate,United States,City_17,State_10,South,Office Supplies,Storage,Product_3752,374.1,4,0.1,-24.72
+ORD-2023092,2023-11-02,2023-11-08,Standard,CUST-1906,Customer_132,Corporate,United States,City_47,State_15,East,Furniture,Tables,Product_4356,357.24,4,0.1,65.93
+ORD-2023093,2023-02-08,2023-02-13,First,CUST-1538,Customer_294,Consumer,United States,City_44,State_15,South,Furniture,Chairs,Product_5179,43.58,2,0.2,0.65
+ORD-2023094,2023-09-14,2023-09-16,Same Day,CUST-1792,Customer_379,Corporate,United States,City_15,State_12,West,Furniture,Bookcases,Product_3255,347.24,6,0.0,2.28
+ORD-2023095,2023-05-25,2023-05-30,Same Day,CUST-1939,Customer_280,Corporate,United States,City_3,State_14,West,Furniture,Chairs,Product_1526,346.98,2,0.2,73.94
+ORD-2023096,2023-08-24,2023-08-28,Same Day,CUST-1830,Customer_313,Corporate,United States,City_2,State_8,West,Furniture,Chairs,Product_9586,353.2,4,0.1,4.51
+ORD-2023097,2023-10-01,2023-10-07,Standard,CUST-1101,Customer_491,Home Office,United States,City_22,State_19,South,Furniture,Chairs,Product_7731,86.25,6,0.0,21.35
+ORD-2023098,2023-11-06,2023-11-12,Second,CUST-1864,Customer_101,Consumer,United States,City_33,State_9,South,Furniture,Furnishings,Product_2949,8.1,4,0.0,2.33
+ORD-2023099,2023-04-13,2023-04-15,First,CUST-1901,Customer_108,Corporate,United States,City_9,State_7,East,Furniture,Tables,Product_1552,396.71,7,0.1,168.07
+ORD-2023100,2023-12-14,2023-12-20,First,CUST-1458,Customer_183,Corporate,United States,City_22,State_3,Central,Technology,Accessories,Product_8294,288.02,4,0.0,88.54
+ORD-2023101,2023-01-12,2023-01-16,Same Day,CUST-1593,Customer_310,Corporate,United States,City_37,State_9,West,Technology,Machines,Product_9946,43.04,7,0.0,-3.36
+ORD-2023102,2023-07-26,2023-07-27,First,CUST-1953,Customer_123,Consumer,United States,City_4,State_12,Central,Furniture,Bookcases,Product_4453,78.64,7,0.0,26.28
+ORD-2023103,2023-04-06,2023-04-07,Second,CUST-1294,Customer_342,Home Office,United States,City_12,State_3,South,Furniture,Chairs,Product_1529,1119.58,4,0.3,392.25
+ORD-2023104,2023-10-09,2023-10-13,Second,CUST-1374,Customer_392,Consumer,United States,City_38,State_13,Central,Technology,Machines,Product_5648,85.57,7,0.1,7.4
+ORD-2023105,2023-01-14,2023-01-15,Standard,CUST-1260,Customer_263,Consumer,United States,City_23,State_15,East,Technology,Machines,Product_7430,63.92,1,0.0,25.08
+ORD-2023106,2023-03-21,2023-03-23,Standard,CUST-1312,Customer_163,Corporate,United States,City_20,State_11,East,Furniture,Tables,Product_7052,254.49,9,0.0,5.03
+ORD-2023107,2023-04-30,2023-05-04,Second,CUST-1333,Customer_229,Consumer,United States,City_37,State_1,West,Office Supplies,Paper,Product_7262,552.11,6,0.0,-24.32
+ORD-2023108,2023-11-21,2023-11-22,Second,CUST-1215,Customer_350,Home Office,United States,City_34,State_18,East,Furniture,Bookcases,Product_6342,131.87,1,0.1,29.86
+ORD-2023109,2023-10-21,2023-10-25,Standard,CUST-1494,Customer_185,Home Office,United States,City_34,State_1,East,Office Supplies,Storage,Product_6238,68.43,5,0.0,14.56
+ORD-2023110,2023-05-25,2023-05-27,First,CUST-1839,Customer_444,Corporate,United States,City_4,State_1,South,Office Supplies,Binders,Product_4072,272.19,8,0.3,77.37
+ORD-2023111,2023-10-31,2023-11-05,Standard,CUST-1088,Customer_275,Consumer,United States,City_9,State_13,East,Office Supplies,Appliances,Product_4230,23.89,2,0.4,-1.22
+ORD-2023112,2023-04-12,2023-04-18,Second,CUST-1396,Customer_378,Home Office,United States,City_45,State_11,Central,Technology,Phones,Product_4712,460.43,4,0.1,139.94
+ORD-2023113,2023-08-01,2023-08-02,Same Day,CUST-1496,Customer_390,Corporate,United States,City_26,State_11,East,Office Supplies,Paper,Product_8010,38.99,5,0.0,5.58
+ORD-2023114,2023-09-22,2023-09-25,Standard,CUST-1220,Customer_253,Consumer,United States,City_12,State_5,East,Office Supplies,Binders,Product_5399,23.45,5,0.3,3.29
+ORD-2023115,2023-12-09,2023-12-15,First,CUST-1116,Customer_223,Home Office,United States,City_25,State_4,Central,Office Supplies,Art,Product_9906,414.01,5,0.0,-39.84
+ORD-2023116,2023-10-02,2023-10-04,First,CUST-1668,Customer_338,Home Office,United States,City_8,State_16,West,Furniture,Chairs,Product_1105,480.72,4,0.0,20.4
+ORD-2023117,2023-03-18,2023-03-22,Standard,CUST-1158,Customer_170,Home Office,United States,City_49,State_10,Central,Technology,Phones,Product_9636,165.62,7,0.1,-1.54
+ORD-2023118,2023-09-20,2023-09-26,Standard,CUST-1886,Customer_217,Consumer,United States,City_22,State_9,East,Technology,Copiers,Product_4097,631.35,1,0.0,117.31
+ORD-2023119,2023-05-01,2023-05-06,First,CUST-1611,Customer_159,Home Office,United States,City_10,State_18,East,Office Supplies,Binders,Product_6010,182.03,1,0.0,53.24
+ORD-2023120,2023-03-10,2023-03-11,Standard,CUST-1976,Customer_249,Consumer,United States,City_15,State_3,Central,Office Supplies,Binders,Product_1987,204.07,3,0.3,27.84
+ORD-2023121,2023-03-19,2023-03-24,Second,CUST-1373,Customer_224,Home Office,United States,City_41,State_17,East,Office Supplies,Paper,Product_7602,169.94,2,0.0,26.5
+ORD-2023122,2023-03-09,2023-03-11,Second,CUST-1035,Customer_331,Consumer,United States,City_33,State_4,South,Furniture,Bookcases,Product_1072,3280.17,6,0.1,121.63
+ORD-2023123,2023-07-15,2023-07-20,Same Day,CUST-1229,Customer_299,Corporate,United States,City_3,State_12,West,Furniture,Chairs,Product_3428,59.69,5,0.0,13.14
+ORD-2023124,2023-08-03,2023-08-07,First,CUST-1797,Customer_215,Corporate,United States,City_44,State_4,West,Furniture,Tables,Product_4374,154.49,2,0.0,61.45
+ORD-2023125,2023-02-24,2023-02-28,First,CUST-1103,Customer_217,Consumer,United States,City_20,State_8,East,Office Supplies,Paper,Product_9555,634.85,4,0.0,65.55
+ORD-2023126,2023-08-19,2023-08-20,Second,CUST-1803,Customer_250,Corporate,United States,City_45,State_2,East,Office Supplies,Storage,Product_3408,44.78,5,0.2,10.05
+ORD-2023127,2023-11-27,2023-11-30,First,CUST-1341,Customer_415,Consumer,United States,City_42,State_12,East,Technology,Phones,Product_1560,53.33,4,0.3,-0.75
+ORD-2023128,2023-06-07,2023-06-09,First,CUST-1404,Customer_262,Corporate,United States,City_27,State_2,East,Technology,Machines,Product_3978,15.39,6,0.0,0.07
+ORD-2023129,2023-09-23,2023-09-24,Second,CUST-1335,Customer_409,Corporate,United States,City_3,State_3,West,Technology,Copiers,Product_2960,62.39,1,0.3,8.95
+ORD-2023130,2023-01-25,2023-01-29,Second,CUST-1671,Customer_448,Home Office,United States,City_2,State_19,South,Office Supplies,Binders,Product_7430,3480.93,4,0.0,-164.19
+ORD-2023131,2023-12-11,2023-12-13,Standard,CUST-1328,Customer_255,Corporate,United States,City_46,State_19,East,Technology,Accessories,Product_7406,975.96,8,0.0,122.24
+ORD-2023132,2023-09-17,2023-09-18,Same Day,CUST-1419,Customer_223,Corporate,United States,City_39,State_18,Central,Furniture,Furnishings,Product_8870,131.74,5,0.1,7.0
+ORD-2023133,2023-06-04,2023-06-08,Second,CUST-1730,Customer_345,Corporate,United States,City_15,State_10,West,Furniture,Bookcases,Product_8638,30.56,6,0.4,0.74
+ORD-2023134,2023-01-13,2023-01-18,Same Day,CUST-1163,Customer_287,Home Office,United States,City_21,State_4,East,Office Supplies,Paper,Product_9737,114.66,2,0.1,-0.08
+ORD-2023135,2023-08-15,2023-08-16,Same Day,CUST-1016,Customer_219,Consumer,United States,City_41,State_1,West,Technology,Copiers,Product_1571,499.84,5,0.4,-16.71
+ORD-2023136,2023-11-10,2023-11-14,First,CUST-1725,Customer_299,Consumer,United States,City_15,State_17,East,Furniture,Tables,Product_8099,275.23,8,0.0,47.69
+ORD-2023137,2023-03-28,2023-04-02,Standard,CUST-1147,Customer_376,Corporate,United States,City_31,State_14,West,Technology,Phones,Product_5531,384.39,3,0.0,-36.11
+ORD-2023138,2023-02-20,2023-02-23,Same Day,CUST-1319,Customer_237,Corporate,United States,City_47,State_16,Central,Office Supplies,Storage,Product_8504,647.62,5,0.1,204.17
+ORD-2023139,2023-11-25,2023-11-27,Second,CUST-1777,Customer_248,Home Office,United States,City_40,State_2,East,Technology,Phones,Product_1780,43.78,9,0.1,8.72
+ORD-2023140,2023-10-15,2023-10-19,Same Day,CUST-1401,Customer_282,Consumer,United States,City_25,State_8,Central,Technology,Copiers,Product_6946,51.6,2,0.0,3.57
+ORD-2023141,2023-10-05,2023-10-09,First,CUST-1121,Customer_131,Corporate,United States,City_39,State_17,Central,Office Supplies,Binders,Product_5875,83.05,3,0.3,18.51
+ORD-2023142,2023-05-29,2023-06-04,First,CUST-1235,Customer_323,Home Office,United States,City_22,State_11,South,Furniture,Chairs,Product_8003,99.71,8,0.2,17.84
+ORD-2023143,2023-08-01,2023-08-05,Standard,CUST-1700,Customer_452,Home Office,United States,City_19,State_7,East,Furniture,Chairs,Product_7251,85.74,3,0.0,5.6
+ORD-2023144,2023-05-16,2023-05-18,Standard,CUST-1899,Customer_203,Home Office,United States,City_32,State_10,Central,Technology,Machines,Product_9033,299.96,8,0.0,78.96
+ORD-2023145,2023-03-07,2023-03-08,Standard,CUST-1973,Customer_113,Consumer,United States,City_34,State_11,East,Office Supplies,Art,Product_4983,278.99,4,0.0,94.89
+ORD-2023146,2023-04-11,2023-04-13,Second,CUST-1226,Customer_253,Consumer,United States,City_38,State_8,East,Office Supplies,Art,Product_5966,14.03,4,0.0,2.31
+ORD-2023147,2023-07-07,2023-07-08,Same Day,CUST-1697,Customer_154,Corporate,United States,City_24,State_2,East,Office Supplies,Storage,Product_1593,22.17,7,0.0,5.8
+ORD-2023148,2023-11-01,2023-11-07,Second,CUST-1313,Customer_216,Home Office,United States,City_36,State_19,Central,Furniture,Bookcases,Product_9623,20.22,3,0.0,1.36
+ORD-2023149,2023-07-02,2023-07-03,Standard,CUST-1197,Customer_359,Home Office,United States,City_27,State_15,West,Furniture,Chairs,Product_2733,134.39,9,0.3,29.74
+ORD-2023150,2023-05-17,2023-05-19,Second,CUST-1770,Customer_206,Consumer,United States,City_30,State_13,South,Technology,Machines,Product_3757,128.24,5,0.0,10.4
+ORD-2023151,2023-02-04,2023-02-10,Same Day,CUST-1260,Customer_455,Corporate,United States,City_26,State_4,West,Furniture,Chairs,Product_8462,73.69,5,0.0,8.67
+ORD-2023152,2023-04-10,2023-04-16,Same Day,CUST-1568,Customer_130,Consumer,United States,City_36,State_12,West,Office Supplies,Paper,Product_5713,31.15,9,0.0,6.39
+ORD-2023153,2023-08-08,2023-08-14,Standard,CUST-1812,Customer_327,Home Office,United States,City_20,State_18,East,Furniture,Bookcases,Product_3297,53.47,6,0.0,17.45
+ORD-2023154,2023-01-07,2023-01-13,Same Day,CUST-1654,Customer_298,Consumer,United States,City_42,State_12,Central,Office Supplies,Binders,Product_4959,49.04,2,0.2,8.54
+ORD-2023155,2023-01-21,2023-01-23,Same Day,CUST-1907,Customer_260,Corporate,United States,City_4,State_10,East,Technology,Accessories,Product_1597,375.22,5,0.1,33.45
+ORD-2023156,2023-03-02,2023-03-04,Second,CUST-1965,Customer_297,Corporate,United States,City_1,State_10,Central,Office Supplies,Appliances,Product_2537,63.82,9,0.2,11.13
+ORD-2023157,2023-04-08,2023-04-11,First,CUST-1649,Customer_198,Home Office,United States,City_49,State_7,Central,Furniture,Tables,Product_3324,311.99,8,0.2,-13.74
+ORD-2023158,2023-08-02,2023-08-07,Same Day,CUST-1057,Customer_383,Corporate,United States,City_49,State_2,East,Office Supplies,Storage,Product_6879,2563.79,6,0.0,48.64
+ORD-2023159,2023-02-11,2023-02-15,First,CUST-1708,Customer_406,Home Office,United States,City_12,State_10,West,Technology,Phones,Product_1007,79.67,7,0.2,7.19
+ORD-2023160,2023-03-26,2023-03-27,Second,CUST-1774,Customer_435,Home Office,United States,City_45,State_3,East,Technology,Copiers,Product_1282,752.62,8,0.1,78.27
+ORD-2023161,2023-08-08,2023-08-09,Same Day,CUST-1648,Customer_111,Home Office,United States,City_46,State_16,East,Technology,Phones,Product_6248,113.8,5,0.0,27.53
+ORD-2023162,2023-06-07,2023-06-12,First,CUST-1570,Customer_346,Home Office,United States,City_5,State_3,West,Technology,Phones,Product_4864,100.83,2,0.0,34.38
+ORD-2023163,2023-05-13,2023-05-16,Same Day,CUST-1939,Customer_476,Home Office,United States,City_2,State_15,South,Furniture,Tables,Product_3504,222.78,4,0.3,-9.94
+ORD-2023164,2023-03-17,2023-03-21,Standard,CUST-1980,Customer_262,Corporate,United States,City_41,State_19,West,Office Supplies,Art,Product_6433,104.12,5,0.0,-5.87
+ORD-2023165,2023-11-21,2023-11-25,Second,CUST-1065,Customer_347,Home Office,United States,City_39,State_6,Central,Office Supplies,Paper,Product_7344,240.92,3,0.0,64.96
+ORD-2023166,2023-12-09,2023-12-12,First,CUST-1190,Customer_120,Home Office,United States,City_46,State_14,Central,Technology,Machines,Product_7115,144.17,4,0.3,1.12
+ORD-2023167,2023-09-09,2023-09-14,First,CUST-1353,Customer_475,Corporate,United States,City_38,State_14,South,Technology,Machines,Product_3659,208.23,6,0.1,37.53
+ORD-2023168,2023-01-30,2023-02-05,Second,CUST-1153,Customer_201,Home Office,United States,City_22,State_16,West,Furniture,Bookcases,Product_5088,363.53,4,0.0,40.25
+ORD-2023169,2023-10-02,2023-10-03,Same Day,CUST-1933,Customer_416,Consumer,United States,City_30,State_9,East,Technology,Accessories,Product_7816,551.48,7,0.1,107.61
+ORD-2023170,2023-11-05,2023-11-08,Same Day,CUST-1067,Customer_363,Corporate,United States,City_41,State_14,West,Office Supplies,Art,Product_6717,1751.49,9,0.0,475.7
+ORD-2023171,2023-01-16,2023-01-21,Standard,CUST-1766,Customer_248,Consumer,United States,City_48,State_5,South,Furniture,Bookcases,Product_8851,80.98,3,0.0,23.86
+ORD-2023172,2023-11-20,2023-11-23,First,CUST-1430,Customer_431,Corporate,United States,City_12,State_14,East,Furniture,Chairs,Product_1526,315.04,1,0.0,145.62
+ORD-2023173,2023-08-20,2023-08-25,Same Day,CUST-1771,Customer_175,Consumer,United States,City_3,State_12,Central,Technology,Phones,Product_1193,643.01,3,0.0,100.43
+ORD-2023174,2023-09-14,2023-09-20,Second,CUST-1729,Customer_382,Home Office,United States,City_42,State_1,East,Office Supplies,Paper,Product_3800,1002.81,6,0.3,-119.37
+ORD-2023175,2023-12-06,2023-12-07,Same Day,CUST-1864,Customer_189,Home Office,United States,City_21,State_17,Central,Office Supplies,Appliances,Product_1703,116.06,1,0.0,-9.48
+ORD-2023176,2023-08-21,2023-08-22,Same Day,CUST-1788,Customer_406,Home Office,United States,City_39,State_9,West,Furniture,Tables,Product_6670,149.64,8,0.0,31.2
+ORD-2023177,2023-11-29,2023-12-05,Standard,CUST-1108,Customer_367,Consumer,United States,City_48,State_1,West,Technology,Machines,Product_7246,95.25,3,0.0,33.7
+ORD-2023178,2023-12-13,2023-12-19,Standard,CUST-1686,Customer_439,Corporate,United States,City_18,State_2,South,Technology,Phones,Product_6443,38.54,7,0.2,12.13
+ORD-2023179,2023-05-27,2023-05-31,First,CUST-1796,Customer_204,Corporate,United States,City_2,State_19,West,Office Supplies,Binders,Product_5658,447.51,3,0.0,165.96
+ORD-2023180,2023-09-16,2023-09-20,Second,CUST-1386,Customer_499,Corporate,United States,City_40,State_2,South,Office Supplies,Storage,Product_5008,170.15,6,0.0,59.76
+ORD-2023181,2023-11-07,2023-11-12,Same Day,CUST-1504,Customer_393,Consumer,United States,City_43,State_18,West,Furniture,Chairs,Product_7563,386.8,1,0.0,51.56
+ORD-2023182,2023-05-02,2023-05-08,Same Day,CUST-1846,Customer_140,Home Office,United States,City_23,State_8,Central,Furniture,Chairs,Product_2141,117.33,2,0.0,14.67
+ORD-2023183,2023-06-05,2023-06-10,Standard,CUST-1201,Customer_225,Home Office,United States,City_49,State_17,Central,Office Supplies,Binders,Product_2829,91.37,1,0.0,-2.08
+ORD-2023184,2023-07-23,2023-07-29,Second,CUST-1836,Customer_475,Home Office,United States,City_3,State_11,South,Office Supplies,Storage,Product_5652,173.35,1,0.0,-2.83
+ORD-2023185,2023-12-29,2024-01-01,Same Day,CUST-1868,Customer_134,Home Office,United States,City_6,State_4,West,Furniture,Tables,Product_1785,108.79,5,0.2,9.27
+ORD-2023186,2023-02-28,2023-03-06,Second,CUST-1067,Customer_168,Consumer,United States,City_41,State_17,South,Technology,Phones,Product_2932,1010.68,4,0.0,389.49
+ORD-2023187,2023-12-09,2023-12-12,First,CUST-1532,Customer_399,Home Office,United States,City_39,State_4,West,Technology,Machines,Product_4456,530.96,3,0.0,81.62
+ORD-2023188,2023-04-21,2023-04-23,Same Day,CUST-1849,Customer_203,Corporate,United States,City_24,State_19,Central,Furniture,Bookcases,Product_3567,84.7,4,0.0,33.62
+ORD-2023189,2023-05-27,2023-05-30,Standard,CUST-1183,Customer_119,Consumer,United States,City_46,State_12,East,Office Supplies,Storage,Product_1882,178.58,6,0.0,59.42
+ORD-2023190,2023-11-04,2023-11-10,Standard,CUST-1957,Customer_315,Home Office,United States,City_15,State_11,West,Technology,Copiers,Product_3808,260.14,7,0.0,11.16
+ORD-2023191,2023-08-07,2023-08-09,First,CUST-1328,Customer_427,Consumer,United States,City_17,State_17,West,Technology,Phones,Product_4935,1867.63,4,0.2,258.18
+ORD-2023192,2023-11-21,2023-11-26,First,CUST-1834,Customer_153,Corporate,United States,City_42,State_16,East,Office Supplies,Art,Product_2227,46.8,7,0.0,5.06
+ORD-2023193,2023-10-13,2023-10-14,Same Day,CUST-1647,Customer_488,Consumer,United States,City_1,State_4,South,Furniture,Furnishings,Product_4175,127.94,5,0.2,-3.66
+ORD-2023194,2023-09-17,2023-09-23,Second,CUST-1187,Customer_272,Corporate,United States,City_45,State_19,West,Technology,Accessories,Product_6242,96.76,6,0.0,16.89
+ORD-2023195,2023-06-11,2023-06-13,First,CUST-1926,Customer_389,Home Office,United States,City_3,State_8,South,Office Supplies,Paper,Product_2238,126.0,2,0.0,12.78
+ORD-2023196,2023-04-28,2023-05-03,Standard,CUST-1669,Customer_368,Consumer,United States,City_19,State_19,South,Office Supplies,Art,Product_8480,21.3,7,0.0,0.28
+ORD-2023197,2023-01-23,2023-01-29,Second,CUST-1177,Customer_465,Consumer,United States,City_24,State_15,Central,Furniture,Bookcases,Product_7846,706.9,6,0.0,170.58
+ORD-2023198,2023-01-12,2023-01-18,Same Day,CUST-1560,Customer_178,Consumer,United States,City_31,State_17,East,Technology,Copiers,Product_8161,99.45,2,0.0,25.49
+ORD-2023199,2023-10-21,2023-10-22,First,CUST-1673,Customer_199,Corporate,United States,City_15,State_19,Central,Technology,Accessories,Product_3224,52.98,9,0.0,1.86
+ORD-2023200,2023-07-05,2023-07-07,First,CUST-1905,Customer_274,Home Office,United States,City_21,State_11,West,Technology,Machines,Product_4607,572.9,1,0.3,184.55

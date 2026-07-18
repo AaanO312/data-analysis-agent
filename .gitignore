@@ -1,0 +1,24 @@
+# 敏感配置
+.env
+
+# 日志 & 上传 & 缓存
+logs/
+uploads/
+__pycache__/
+*.pyc
+.venv/
+
+# Streamlit
+.streamlit/
+
+# 测试
+test_*.py
+test_chart.png
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

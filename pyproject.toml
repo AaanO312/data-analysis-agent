@@ -1,0 +1,27 @@
+[project]
+name = "data-analysis-agent"
+version = "1.0.0"
+description = "通用数据分析 Agent — LangGraph + FastAPI + Streamlit"
+requires-python = ">=3.11"
+dependencies = [
+    "fastapi>=0.115.0",
+    "uvicorn[standard]>=0.34.0",
+    "streamlit>=1.28.0",
+    "langgraph>=0.6.0",
+    "langchain>=0.3.0",
+    "langchain-community>=0.3.0",
+    "pandas>=2.0.0",
+    "matplotlib>=3.7.0",
+    "openpyxl>=3.1.0",
+    "dashscope>=1.20.0",
+    "pydantic-settings>=2.0.0",
+    "python-multipart>=0.0.9",
+    "pyyaml>=6.0",
+]
+
+[project.scripts]
+dev-backend = "uvicorn backend.main:app --reload --host 0.0.0.0 --port 8000"
+dev-frontend = "streamlit run frontend/app.py"
+
+[tool.uv]
+dev-dependencies = []
