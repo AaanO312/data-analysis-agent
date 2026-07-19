@@ -183,7 +183,7 @@ def sql_validator_node(state: AgentState) -> dict:
             logger.warning(f"[SQL校验] {error}")
             return {"sql_valid": False, "sql_error": error}
 
-    logger.info("[SQL校验] ✓ 安全检查通过")
+    logger.info("[SQL校验] [PASS] security check")
 
     # Step 2: 格式检查
     if not sql.strip().upper().startswith("SELECT"):
@@ -191,7 +191,7 @@ def sql_validator_node(state: AgentState) -> dict:
         logger.warning(f"[SQL校验] {error}")
         return {"sql_valid": False, "sql_error": error}
 
-    logger.info("[SQL校验] ✓ 格式检查通过（SELECT语句）")
+    logger.info("[SQL校验] [PASS] format check (SELECT)")
 
     # Step 3: 语法校验（EXPLAIN dry-run）
     syntax_error = explain_sql(sql, thread_id)
@@ -200,7 +200,7 @@ def sql_validator_node(state: AgentState) -> dict:
         logger.warning(f"[SQL校验] {error}")
         return {"sql_valid": False, "sql_error": error}
 
-    logger.info("[SQL校验] ✓ 语法检查通过（EXPLAIN dry-run成功）")
+    logger.info("[SQL校验] [PASS] syntax check (EXPLAIN ok)")
 
     # Step 4: 字段校验
     field_errors = _check_fields(sql, columns, table_name)
@@ -209,8 +209,8 @@ def sql_validator_node(state: AgentState) -> dict:
         logger.warning(f"[SQL校验] {error}")
         return {"sql_valid": False, "sql_error": error}
 
-    logger.info("[SQL校验] ✓ 字段检查通过")
-    logger.info("[SQL校验] ✅ 全部校验通过！")
+    logger.info("[SQL校验] [PASS] field check")
+    logger.info("[SQL校验] [PASS] all validations passed")
     return {"sql_valid": True, "sql_error": ""}
 
 

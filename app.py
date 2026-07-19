@@ -166,67 +166,58 @@ if question and st.session_state["data_loaded"]:
         st.markdown(question)
 
     with st.chat_message("assistant"):
-        # 动态占位符，随 SSE 事件逐步更新
-        sql_placeholder = st.empty()
-        data_placeholder = st.empty()
-        chart_placeholder = st.empty()
-        insight_placeholder = st.empty()
-        status_placeholder = st.empty()
-
         accumulated = {"sql_text": "", "data_table": [], "chart_base64": "", "insight": ""}
 
         try:
             payload = {"question": question, "thread_id": st.session_state["thread_id"]}
-            resp = requests.post(
-                f"{BACKEND_URL}/chat/stream",
-                json=payload, stream=True, timeout=120,
-            )
+            with st.spinner(" AI 分析中…"):
+                resp = requests.post(
+                    f"{BACKEND_URL}/chat/stream",
+                    json=payload, stream=True, timeout=120,
+                )
+                if resp.status_code != 200:
+                    st.error(f"请求失败 ({resp.status_code})")
+                else:
+                    for line in resp.iter_lines():
+                        if not line:
+                            continue
+                        try:
+                            line_str = line.decode("utf-8")
+                        except UnicodeDecodeError:
+                            continue
+                        if not line_str.startswith("data: "):
+                            continue
+                        try:
+                            event = json.loads(line_str[6:])
+                        except json.JSONDecodeError:
+                            continue
 
-            if resp.status_code != 200:
-                st.error(f"请求失败 ({resp.status_code})")
-            else:
-                status_placeholder.caption(" AI 分析中…")
-                for line in resp.iter_lines():
-                    if not line:
-                        continue
-                    line = line.decode("utf-8")
-                    if not line.startswith("data: "):
-                        continue
-                    try:
-                        event = json.loads(line[6:])
-                    except json.JSONDecodeError:
-                        continue
+                        etype = event.get("type")
+                        if etype == "sql":
+                            accumulated["sql_text"] = event["text"]
+                        elif etype == "data":
+                            accumulated["data_table"] = event.get("table", [])
+                        elif etype == "chart":
+                            accumulated["chart_base64"] = event.get("base64", "")
+                        elif etype == "insight":
+                            accumulated["insight"] = event["text"]
+                        elif etype == "error":
+                            st.error(event.get("msg", "未知错误"))
+                            break
 
-                    etype = event.get("type")
+            # 统一渲染（避免 SSE 流内 Streamlit 组件冲突）
+            if accumulated["sql_text"]:
+                with st.expander(" 生成的 SQL", expanded=False):
+                    st.code(accumulated["sql_text"], language="sql")
+            if accumulated["data_table"]:
+                st.dataframe(pd.DataFrame(accumulated["data_table"]), use_container_width=True)
+            if accumulated["chart_base64"]:
+                render_chart(accumulated["chart_base64"])
+            if accumulated["insight"]:
+                st.markdown("###  洞察与建议")
+                st.info(accumulated["insight"])
 
-                    if etype == "sql":
-                        accumulated["sql_text"] = event["text"]
-                        with sql_placeholder.expander(" 生成的 SQL", expanded=True):
-                            st.code(event["text"], language="sql")
-
-                    elif etype == "data":
-                        accumulated["data_table"] = event.get("table", [])
-                        df = pd.DataFrame(event["table"])
-                        if not df.empty:
-                            data_placeholder.dataframe(df, use_container_width=True)
-
-                    elif etype == "chart":
-                        accumulated["chart_base64"] = event.get("base64", "")
-                        render_chart(event["base64"])
-
-                    elif etype == "insight":
-                        accumulated["insight"] = event["text"]
-                        insight_placeholder.markdown("###  洞察与建议")
-                        insight_placeholder.info(event["text"])
-                        status_placeholder.caption("✅ 分析完成")
-
-                    elif etype == "error":
-                        status_placeholder.error(event.get("msg", "未知错误"))
-
-                    elif etype == "done":
-                        status_placeholder.caption("✅ 分析完成")
-
-                status_placeholder.caption("✅ 分析完成")
+            st.caption("✅ 分析完成")
 
             st.session_state["messages"].append({
                 "role": "assistant",
