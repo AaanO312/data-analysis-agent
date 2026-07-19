@@ -9,6 +9,7 @@ from core.model import invoke_llm
 from agents.few_shot import match_examples
 from tools.sql_tool import csv_to_sqlite, execute_sql, explain_sql
 from tools.pandas_tool import analyze_data, choose_chart_type, generate_chart_json
+from schemas.agent import InsightResult
 from utils.logger import logger
 
 
@@ -132,9 +133,9 @@ def nl2sql_node(state: AgentState) -> dict[str, Any]:
 
     if sql_error:
         prompt += (
-            f"\n\n## 重要：上一次生成的SQL校验失败 ##\n"
+            f"\n\n## 重要：上一次生成的SQL存在问题，请修正 ##\n"
             f"错误信息: {sql_error}\n"
-            f"请修正上述错误，重新生成正确的SQL。这是第{retry_count}次重试。"
+            f"请根据错误信息修正SQL，重新生成正确的查询语句。这是第{retry_count}次重试。"
         )
 
     # LLM 调用（带异常保护，防止 API 超时等意外）
@@ -265,16 +266,20 @@ def analysis_node(state: AgentState) -> dict[str, Any]:
     sql = state.get("generated_sql", "")
     thread_id = state.get("thread_id", "default")
     user_question = state.get("user_question", "")
+    retry_count = state.get("sql_retry_count", 0)
 
     # 执行 SQL
     try:
         rows, columns = execute_sql(sql, thread_id)
     except Exception as e:
         logger.error(f"[分析] SQL执行失败: {e}")
+        new_retry = retry_count + 1
         return {
             "query_result_json": json.dumps({"error": str(e)}, ensure_ascii=False),
             "query_columns": [],
             "analysis_result": f"SQL执行失败: {e}",
+            "sql_retry_count": new_retry,
+            "sql_error": f"SQL执行错误（第{new_retry}次）: {e}",
         }
 
     query_result_json = json.dumps(rows, ensure_ascii=False, default=str)
@@ -368,12 +373,63 @@ def insight_node(state: AgentState) -> dict[str, Any]:
             analysis_result=analysis_result[:2000],
             auto_stats=auto_stats,
         )
-        insight_text = invoke_llm(prompt)
-        logger.info(f"[洞察] 生成洞察，长度={len(insight_text)} 字符")
-        logger.info(f"[洞察] 内容摘要: {insight_text[:200]}")
-    except Exception as e:
-        logger.warning(f"[洞察] LLM调用失败: {e}")
-        insight_text = f"分析完成。{auto_stats}。\n{analysis_result[:300]}"
+        # 追加 JSON Schema 格式约束，强制结构化输出
+        prompt += (
+            "\n\n## 输出格式（严格 JSON）##\n"
+            "请仅输出一个 JSON 对象，字段如下，不要输出任何其他内容：\n"
+            "{\n"
+            '  "summary": "一句话核心发现",\n'
+            '  "key_findings": ["发现1", "发现2", "发现3"],\n'
+            '  "suggestion": "具体业务建议，用1、2、3编号"\n'
+            "}\n"
+            "确保输出是合法 JSON，字符串中如有双引号请用反斜杠转义。"
+        )
+
+        raw_response = invoke_llm(prompt)
+        logger.info(f"[洞察] LLM原始响应长度={len(raw_response)}")
+
+        # 解析 JSON 输出
+        insight_json = _parse_insight_json(raw_response)
+        InsightResult.model_validate(insight_json)  # Pydantic 校验
+        insight_text = json.dumps(insight_json, ensure_ascii=False)
+        logger.info(f"[洞察] 结构化洞察生成成功: summary={insight_json.get('summary', '')[:80]}...")
+    except (json.JSONDecodeError, ValueError, Exception) as e:
+        logger.warning(f"[洞察] 结构化生成失败({type(e).__name__}: {e})，使用纯文本回退")
+        # 回退：将原始分析结果包装为结构化格式
+        fallback = {
+            "summary": user_question,
+            "key_findings": [analysis_result[:150]] if analysis_result else ["分析完成"],
+            "suggestion": "请查看上方数据表格和图表获取详细信息。",
+        }
+        insight_text = json.dumps(fallback, ensure_ascii=False)
 
     logger.info("-" * 40)
     return {"insight_text": insight_text}
+
+
+def _parse_insight_json(raw: str) -> dict:
+    """从 LLM 原始响应中提取 JSON 对象，支持多层回退解析"""
+    # 尝试 1: 直接解析全文
+    try:
+        return json.loads(raw)
+    except json.JSONDecodeError:
+        pass
+
+    # 尝试 2: 提取 ```json ... ``` 代码块
+    m = re.search(r'```(?:json)?\s*\n?(.*?)\n?```', raw, re.DOTALL)
+    if m:
+        try:
+            return json.loads(m.group(1).strip())
+        except json.JSONDecodeError:
+            pass
+
+    # 尝试 3: 使用正则匹配第一个完整的 { ... } 对象
+    m = re.search(r'\{[^{}]*\{[^{}]*\}[^{}]*\}|\{[^{}]*\}', raw, re.DOTALL)
+    if m:
+        try:
+            return json.loads(m.group(0))
+        except json.JSONDecodeError:
+            pass
+
+    # 兜底: 抛出异常触发 fallback
+    raise ValueError(f"无法从响应中解析 JSON: {raw[:200]}")

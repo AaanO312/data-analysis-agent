@@ -18,6 +18,13 @@ class UploadResponse(BaseModel):
     data_dict: str = Field(..., description="数据字典")
 
 
+class InsightResult(BaseModel):
+    """结构化洞察输出 — 强制 LLM 按此 Schema 输出"""
+    summary: str = Field(default="", description="一句话核心发现概括")
+    key_findings: list[str] = Field(default_factory=list, description="2-3条关键数据发现")
+    suggestion: str = Field(default="", description="具体可执行的业务建议")
+
+
 class ChatResponse(BaseModel):
     """聊天响应 — 严格按需求四字段"""
     sql_text: str = Field(default="", description="生成的 SQL 语句")

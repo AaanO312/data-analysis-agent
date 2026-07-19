@@ -1,6 +1,7 @@
 """通用数据分析 Agent — Streamlit 前端（纯展示层，通过 HTTP 调后端）"""
 import streamlit as st
 import requests
+import json
 import pandas as pd
 import plotly.io as pio
 import os
@@ -39,6 +40,26 @@ def render_chart(chart_json: str):
             st.plotly_chart(fig, use_container_width=True)
         except Exception:
             st.warning("图表渲染失败")
+
+
+def _render_insight(insight_str: str):
+    """渲染结构化洞察，支持 JSON 和纯文本两种格式"""
+    try:
+        obj = json.loads(insight_str)
+        if isinstance(obj, dict) and "summary" in obj:
+            # 结构化渲染
+            if obj.get("summary"):
+                st.success(f"**  {obj['summary']}**")
+            if obj.get("key_findings"):
+                for finding in obj["key_findings"]:
+                    st.markdown(f"- {finding}")
+            if obj.get("suggestion"):
+                st.info(f"  {obj['suggestion']}")
+            return
+    except (json.JSONDecodeError, TypeError):
+        pass
+    # 回退：纯文本渲染
+    st.info(insight_str)
 
 
 # ==================== 侧边栏：上传区 ====================
@@ -149,7 +170,7 @@ for msg in st.session_state["messages"]:
                 render_chart(c["chart_json"])
             if c.get("insight"):
                 st.markdown("###  洞察与建议")
-                st.info(c["insight"])
+                _render_insight(c["insight"])
         else:
             st.markdown(msg["content"])
 
