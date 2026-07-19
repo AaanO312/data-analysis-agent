@@ -166,67 +166,41 @@ if question and st.session_state["data_loaded"]:
         st.markdown(question)
 
     with st.chat_message("assistant"):
-        accumulated = {"sql_text": "", "data_table": [], "chart_base64": "", "insight": ""}
+        with st.spinner(" AI 分析中…"):
+            try:
+                payload = {"question": question, "thread_id": st.session_state["thread_id"]}
+                resp = requests.post(f"{BACKEND_URL}/chat", json=payload, timeout=120)
 
-        try:
-            payload = {"question": question, "thread_id": st.session_state["thread_id"]}
-            with st.spinner(" AI 分析中…"):
-                resp = requests.post(
-                    f"{BACKEND_URL}/chat/stream",
-                    json=payload, stream=True, timeout=120,
-                )
-                if resp.status_code != 200:
-                    st.error(f"请求失败 ({resp.status_code})")
+                if resp.status_code == 200:
+                    data = resp.json()
+                    if data.get("sql_text"):
+                        with st.expander(" 生成的 SQL", expanded=False):
+                            st.code(data["sql_text"], language="sql")
+                    if data.get("data_table"):
+                        st.dataframe(pd.DataFrame(data["data_table"]), use_container_width=True)
+                    if data.get("chart_base64"):
+                        render_chart(data["chart_base64"])
+                    if data.get("insight"):
+                        st.markdown("###  洞察与建议")
+                        st.info(data["insight"])
+                    st.caption("✅ 分析完成")
+
+                    st.session_state["messages"].append({
+                        "role": "assistant",
+                        "content": {
+                            "sql_text": data.get("sql_text", ""),
+                            "data_table": data.get("data_table", []),
+                            "chart_base64": data.get("chart_base64", ""),
+                            "insight": data.get("insight", ""),
+                        },
+                    })
                 else:
-                    for line in resp.iter_lines():
-                        if not line:
-                            continue
-                        try:
-                            line_str = line.decode("utf-8")
-                        except UnicodeDecodeError:
-                            continue
-                        if not line_str.startswith("data: "):
-                            continue
-                        try:
-                            event = json.loads(line_str[6:])
-                        except json.JSONDecodeError:
-                            continue
+                    err = resp.json().get("detail", resp.text) if resp.text else "未知错误"
+                    st.error(f"请求失败 ({resp.status_code}): {err}")
 
-                        etype = event.get("type")
-                        if etype == "sql":
-                            accumulated["sql_text"] = event["text"]
-                        elif etype == "data":
-                            accumulated["data_table"] = event.get("table", [])
-                        elif etype == "chart":
-                            accumulated["chart_base64"] = event.get("base64", "")
-                        elif etype == "insight":
-                            accumulated["insight"] = event["text"]
-                        elif etype == "error":
-                            st.error(event.get("msg", "未知错误"))
-                            break
-
-            # 统一渲染（避免 SSE 流内 Streamlit 组件冲突）
-            if accumulated["sql_text"]:
-                with st.expander(" 生成的 SQL", expanded=False):
-                    st.code(accumulated["sql_text"], language="sql")
-            if accumulated["data_table"]:
-                st.dataframe(pd.DataFrame(accumulated["data_table"]), use_container_width=True)
-            if accumulated["chart_base64"]:
-                render_chart(accumulated["chart_base64"])
-            if accumulated["insight"]:
-                st.markdown("###  洞察与建议")
-                st.info(accumulated["insight"])
-
-            st.caption("✅ 分析完成")
-
-            st.session_state["messages"].append({
-                "role": "assistant",
-                "content": accumulated,
-            })
-
-        except requests.exceptions.ConnectionError:
-            st.error(" 无法连接后端")
-        except requests.exceptions.Timeout:
-            st.error(" 请求超时")
-        except Exception as e:
-            st.error(f"请求异常: {e}")
+            except requests.exceptions.ConnectionError:
+                st.error(" 无法连接后端")
+            except requests.exceptions.Timeout:
+                st.error(" 请求超时")
+            except Exception as e:
+                st.error(f"请求异常: {type(e).__name__}: {e}")
