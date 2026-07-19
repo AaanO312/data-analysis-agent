@@ -1,7 +1,8 @@
-"""通义千问模型初始化（DashScope）— 单例 + 重试"""
+"""通义千问模型初始化（DashScope）— 单例 + 重试 + 指标"""
 import time
 from langchain_community.chat_models.tongyi import ChatTongyi
 from core.config import settings
+from tools.metrics import metrics
 from utils.logger import logger
 
 _model = None
@@ -27,11 +28,14 @@ def invoke_llm(prompt: str) -> str:
     model = get_model()
     last_error = None
     for attempt in range(LLM_MAX_RETRIES):
+        t0 = time.time()
         try:
             response = model.invoke(prompt)
+            metrics.record_llm(time.time() - t0, error=False)
             return response.content.strip()
         except Exception as e:
             last_error = e
+            metrics.record_llm(time.time() - t0, error=True)
             if attempt < LLM_MAX_RETRIES - 1:
                 delay = LLM_RETRY_BASE_DELAY * (2 ** attempt)
                 logger.warning(f"LLM 调用失败 (第{attempt+1}/{LLM_MAX_RETRIES}次): {e}，{delay:.1f}s 后重试")

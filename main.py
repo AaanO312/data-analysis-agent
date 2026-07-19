@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from schemas.agent import ChatRequest, ChatResponse, UploadResponse
 from tools.sql_tool import csv_to_sqlite
 from tools.session_store import load_sessions, create_session, get_session, update_conversation
+from tools.metrics import metrics
 from agents.graph import build_graph
 from core.config import settings
 from utils.logger import logger, set_trace_id
@@ -72,6 +73,11 @@ async def health():
     return {"status": "ok", "version": "1.0.0"}
 
 
+@app.get("/metrics")
+async def get_metrics():
+    return metrics.snapshot()
+
+
 # ── 上传 CSV ──
 def _save_upload_file(upload_file: UploadFile, thread_id: str) -> str:
     upload_dir = settings.UPLOAD_DIR
@@ -101,6 +107,7 @@ async def upload_csv(file: UploadFile = File(...)):
 
     thread_id = uuid.uuid4().hex
     logger.info(f"/upload: thread_id={thread_id}, file={file.filename}, size={len(content)}B")
+    metrics.record_upload()
     csv_path = _save_upload_file(file, thread_id)
 
     try:
@@ -133,6 +140,7 @@ async def chat(req: ChatRequest, request: Request):
     # 限流检查
     client_ip = request.client.host if request.client else "unknown"
     if not _check_rate_limit(client_ip):
+        metrics.record_rate_limited()
         raise HTTPException(status_code=429, detail=f"请求过快，每分钟最多 {RATE_LIMIT} 次")
 
     logger.info(f"/chat: thread_id={thread_id}, question={req.question[:80]}")
@@ -141,6 +149,7 @@ async def chat(req: ChatRequest, request: Request):
         raise HTTPException(status_code=400, detail="无效的 thread_id，请先上传 CSV 文件")
 
     config = {"configurable": {"thread_id": thread_id}}
+    t0 = time.time()
 
     try:
         conversation_history = session.get("conversation_history", "")
@@ -165,7 +174,8 @@ async def chat(req: ChatRequest, request: Request):
         except (json.JSONDecodeError, TypeError):
             data_table = []
 
-        logger.info(f"[API] /chat 完成: sql_valid={state.get('sql_valid')}")
+        logger.info(f"/chat 完成: sql_valid={state.get('sql_valid')}")
+        metrics.record_chat(time.time() - t0, error=False)
         return ChatResponse(
             sql_text=state.get("generated_sql", ""),
             data_table=data_table,
@@ -173,7 +183,7 @@ async def chat(req: ChatRequest, request: Request):
             insight=state.get("insight_text", ""),
         )
     except Exception as e:
-        logger.error(f"[API] /chat 内部错误: {e}", exc_info=True)
+        metrics.record_chat(time.time() - t0, error=True)
         raise HTTPException(status_code=500, detail=str(e))
 
 
