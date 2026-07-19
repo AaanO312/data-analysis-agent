@@ -1,5 +1,6 @@
 # 敏感配置
 .env
+sessions.json
 
 # 日志 & 上传 & 缓存
 logs/

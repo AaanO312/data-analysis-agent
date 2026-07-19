@@ -8,6 +8,7 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from schemas.agent import ChatRequest, ChatResponse, UploadResponse
 from tools.sql_tool import csv_to_sqlite
+from tools.session_store import load_sessions, create_session, get_session, update_conversation
 from agents.graph import build_graph
 from core.config import settings
 from utils.logger import logger
@@ -26,9 +27,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# LangGraph 实例
+# LangGraph 实例 + 持久化会话存储
 _graph = build_graph()
-_session_state: dict = {}
+_session_state: dict = load_sessions()
 
 
 # ── 全局异常中间件 ──
@@ -79,10 +80,10 @@ async def upload_csv(file: UploadFile = File(...)):
     table_name, columns, row_count = csv_to_sqlite(csv_path, thread_id)
     data_dict = _build_basic_data_dict(df, columns)
 
-    _session_state[thread_id] = {
+    create_session(_session_state, thread_id, {
         "csv_file_path": csv_path, "table_name": table_name,
         "columns": columns, "data_dict": data_dict, "row_count": row_count,
-    }
+    })
 
     logger.info(f"[API] /upload 完成: {table_name}, {len(columns)} 列, {row_count} 行")
     return UploadResponse(thread_id=thread_id, table_name=table_name,
@@ -95,7 +96,7 @@ async def chat(req: ChatRequest):
     thread_id = req.thread_id
     logger.info(f"[API] /chat: thread_id={thread_id}, question={req.question[:80]}")
 
-    session = _session_state.get(thread_id)
+    session = get_session(_session_state, thread_id)
     if not session:
         raise HTTPException(status_code=400, detail="无效的 thread_id，请先上传 CSV 文件")
 
@@ -116,9 +117,7 @@ async def chat(req: ChatRequest):
         state = _graph.invoke(state_input, config)
 
         insight_text = state.get("insight_text", "")
-        _session_state[thread_id]["conversation_history"] = (
-            f"{conversation_history}\n用户: {req.question}\n助手: {insight_text[:300]}"
-        )
+        update_conversation(_session_state, thread_id, req.question, insight_text)
 
         query_result_json = state.get("query_result_json", "[]")
         try:
