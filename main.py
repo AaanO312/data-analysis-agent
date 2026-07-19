@@ -2,6 +2,8 @@
 import os
 import json
 import uuid
+import time
+import hashlib
 import pandas as pd
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException
 from fastapi.responses import JSONResponse
@@ -11,7 +13,7 @@ from tools.sql_tool import csv_to_sqlite
 from tools.session_store import load_sessions, create_session, get_session, update_conversation
 from agents.graph import build_graph
 from core.config import settings
-from utils.logger import logger
+from utils.logger import logger, set_trace_id
 
 app = FastAPI(
     title="通用数据分析 Agent",
@@ -31,14 +33,36 @@ app.add_middleware(
 _graph = build_graph()
 _session_state: dict = load_sessions()
 
+# 限流：每 IP 每分钟最多 10 次请求
+_rate_window: dict[str, list[float]] = {}
+RATE_LIMIT = 10
+RATE_WINDOW = 60  # 秒
 
-# ── 全局异常中间件 ──
+MAX_UPLOAD_SIZE = 50 * 1024 * 1024  # 50MB
+
+
+def _check_rate_limit(client_ip: str) -> bool:
+    now = time.time()
+    timestamps = _rate_window.get(client_ip, [])
+    timestamps = [t for t in timestamps if now - t < RATE_WINDOW]
+    if len(timestamps) >= RATE_LIMIT:
+        return False
+    timestamps.append(now)
+    _rate_window[client_ip] = timestamps
+    return True
+
+
+# ── 全局中间件：trace_id + 异常捕获 ──
 @app.middleware("http")
-async def global_exception_handler(request: Request, call_next):
+async def request_middleware(request: Request, call_next):
+    tid = uuid.uuid4().hex[:12]
+    set_trace_id(tid)
+    response = None
     try:
-        return await call_next(request)
+        response = await call_next(request)
+        return response
     except Exception as e:
-        logger.error(f"[Global] 未捕获异常: {e}", exc_info=True)
+        logger.error(f"未捕获异常: {e}", exc_info=True)
         return JSONResponse(status_code=500, content={"code": 500, "msg": "内部错误", "detail": str(e)})
 
 
@@ -64,8 +88,19 @@ async def upload_csv(file: UploadFile = File(...)):
     if not file.filename or not file.filename.endswith(".csv"):
         raise HTTPException(status_code=400, detail="仅支持 CSV 文件")
 
+    # 文件大小校验
+    content = await file.read()
+    if len(content) > MAX_UPLOAD_SIZE:
+        raise HTTPException(status_code=400, detail=f"文件过大，限制 {MAX_UPLOAD_SIZE // 1024 // 1024}MB")
+    await file.seek(0)
+
+    # 内容嗅探：前 500 字节必须包含逗号（CSV 基本特征）
+    head = content[:500].decode("utf-8", errors="ignore")
+    if "," not in head:
+        raise HTTPException(status_code=400, detail="文件内容不是合法 CSV 格式（未检测到逗号分隔符）")
+
     thread_id = uuid.uuid4().hex
-    logger.info(f"[API] /upload: thread_id={thread_id}, file={file.filename}")
+    logger.info(f"/upload: thread_id={thread_id}, file={file.filename}, size={len(content)}B")
     csv_path = _save_upload_file(file, thread_id)
 
     try:
@@ -92,10 +127,15 @@ async def upload_csv(file: UploadFile = File(...)):
 
 # ── 自然语言对话 ──
 @app.post("/chat", response_model=ChatResponse)
-async def chat(req: ChatRequest):
+async def chat(req: ChatRequest, request: Request):
     thread_id = req.thread_id
-    logger.info(f"[API] /chat: thread_id={thread_id}, question={req.question[:80]}")
 
+    # 限流检查
+    client_ip = request.client.host if request.client else "unknown"
+    if not _check_rate_limit(client_ip):
+        raise HTTPException(status_code=429, detail=f"请求过快，每分钟最多 {RATE_LIMIT} 次")
+
+    logger.info(f"/chat: thread_id={thread_id}, question={req.question[:80]}")
     session = get_session(_session_state, thread_id)
     if not session:
         raise HTTPException(status_code=400, detail="无效的 thread_id，请先上传 CSV 文件")

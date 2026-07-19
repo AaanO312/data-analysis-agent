@@ -4,7 +4,7 @@ import json
 import os
 import re
 from agents.state import AgentState
-from core.model import get_model
+from core.model import invoke_llm
 from agents.few_shot import match_examples
 from tools.sql_tool import csv_to_sqlite, execute_sql, explain_sql
 from tools.pandas_tool import analyze_data, choose_chart_type, generate_chart_base64
@@ -51,11 +51,9 @@ def data_understanding_node(state: AgentState) -> dict:
 
     # LLM 推测业务含义
     try:
-        model = get_model()
         prompt_template = _load_prompt("data_understanding")
         prompt = prompt_template.format(column_info=column_info)
-        response = model.invoke(prompt)
-        data_dict = response.content.strip()
+        data_dict = invoke_llm(prompt)
         logger.info(f"[数据理解] LLM 生成数据字典，长度={len(data_dict)} 字符")
     except Exception as e:
         logger.warning(f"[数据理解] LLM 调用失败，使用自动生成的数据字典: {e}")
@@ -136,9 +134,7 @@ def nl2sql_node(state: AgentState) -> dict:
             f"请修正上述错误，重新生成正确的SQL。这是第{retry_count}次重试。"
         )
 
-    model = get_model()
-    response = model.invoke(prompt)
-    sql = _extract_sql(response.content.strip())
+    sql = _extract_sql(invoke_llm(prompt))
     logger.info(f"[NL2SQL] 生成SQL:\n{sql}")
 
     return {
@@ -275,7 +271,6 @@ def analysis_node(state: AgentState) -> dict:
     # LLM 深度分析
     analysis_result = ""
     try:
-        model = get_model()
         prompt_template = _load_prompt("analysis")
         prompt = prompt_template.format(
             user_question=user_question,
@@ -283,8 +278,7 @@ def analysis_node(state: AgentState) -> dict:
                           f"前5行: {json.dumps(rows[:5], ensure_ascii=False, default=str)}",
             auto_analysis=json.dumps(auto_stats, ensure_ascii=False, default=str),
         )
-        response = model.invoke(prompt)
-        analysis_result = response.content.strip()
+        analysis_result = invoke_llm(prompt)
         logger.info(f"[分析] LLM分析结果长度={len(analysis_result)} 字符")
     except Exception as e:
         logger.warning(f"[分析] LLM分析失败，使用自动统计: {e}")
@@ -350,15 +344,13 @@ def insight_node(state: AgentState) -> dict:
     auto_stats = f"查询返回 {len(rows)} 行数据，列: {', '.join(query_columns)}"
 
     try:
-        model = get_model()
         prompt_template = _load_prompt("insight")
         prompt = prompt_template.format(
             user_question=user_question,
             analysis_result=analysis_result[:2000],
             auto_stats=auto_stats,
         )
-        response = model.invoke(prompt)
-        insight_text = response.content.strip()
+        insight_text = invoke_llm(prompt)
         logger.info(f"[洞察] 生成洞察，长度={len(insight_text)} 字符")
         logger.info(f"[洞察] 内容摘要: {insight_text[:200]}")
     except Exception as e:
