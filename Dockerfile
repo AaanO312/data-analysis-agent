@@ -5,7 +5,7 @@ WORKDIR /app
 RUN pip install --no-cache-dir \
     fastapi uvicorn[standard] streamlit \
     langgraph langchain langchain-community \
-    pandas matplotlib openpyxl dashscope \
+    pandas plotly openpyxl dashscope \
     pydantic-settings python-multipart pyyaml
 
 COPY . .

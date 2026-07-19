@@ -1,37 +1,9 @@
 import pandas as pd
 import numpy as np
 import json
-import io
-import base64
-import matplotlib
-matplotlib.use("Agg")
-import matplotlib.pyplot as plt
-import matplotlib.font_manager as fm
+import plotly.graph_objects as go
+import plotly.express as px
 from utils.logger import logger
-
-
-# ==================== 中文字体设置 ====================
-
-def _setup_chinese_font():
-    """设置中文字体，fallback 到可用字体"""
-    chinese_fonts = ["SimHei", "Microsoft YaHei", "WenQuanYi Micro Hei",
-                     "Noto Sans CJK SC", "Source Han Sans SC", "PingFang SC"]
-    available = {f.name for f in fm.fontManager.ttflist}
-
-    for font in chinese_fonts:
-        if font in available:
-            plt.rcParams["font.sans-serif"] = [font, "DejaVu Sans"]
-            plt.rcParams["axes.unicode_minus"] = False
-            logger.info(f"[Viz] 使用中文字体: {font}")
-            return font
-
-    plt.rcParams["font.sans-serif"] = ["DejaVu Sans"]
-    plt.rcParams["axes.unicode_minus"] = False
-    logger.warning("[Viz] 未找到中文字体，图表中文可能显示为方块。")
-    return "DejaVu Sans"
-
-
-_setup_chinese_font()
 
 
 # ==================== 数据分析 ====================
@@ -146,7 +118,11 @@ def _find_date_column(df: pd.DataFrame) -> str:
     return ""
 
 
-# ==================== 图表生成 ====================
+# ==================== 图表生成（Plotly 交互式） ====================
+
+# 配色方案（专业商务风格）
+COLORS = ["#5470C6", "#91CC75", "#FAC858", "#EE6666", "#73C0DE", "#3BA272", "#FC8452", "#9A60B4"]
+
 
 def choose_chart_type(rows: list[dict], columns: list[str]) -> str:
     """根据数据特征自动选择图表类型: bar（默认/对比）| line（趋势）| pie（占比，严格限制）| scatter"""
@@ -169,7 +145,7 @@ def choose_chart_type(rows: list[dict], columns: list[str]) -> str:
     if len(numeric_cols) >= 2 and len(category_cols) == 0 and len(df) >= 3:
         return "scatter"
 
-    # 饼图仅限：2~4行 + 单数值列 + 数值看起来像占比（列名含 pct/percent/占比/比例，或值在0~100之间）
+    # 饼图仅限：2~4行 + 单数值列 + 数值看起来像占比
     if len(category_cols) >= 1 and len(numeric_cols) == 1 and 2 <= len(df) <= 4:
         val_col = numeric_cols[0]
         col_lower = val_col.lower()
@@ -179,13 +155,16 @@ def choose_chart_type(rows: list[dict], columns: list[str]) -> str:
         if looks_like_pct:
             return "pie"
 
-    # 默认柱状图（对比/排名/单行，最通用）
+    # 默认柱状图
     return "bar"
 
 
-def generate_chart_base64(rows: list[dict], columns: list[str],
-                          chart_type: str = None, title: str = "") -> str:
-    """根据数据生成图表，返回 base64 编码字符串"""
+def generate_chart_json(rows: list[dict], columns: list[str],
+                        chart_type: str = None, title: str = "") -> str:
+    """
+    根据数据生成 Plotly 交互式图表，返回 figure JSON 字符串。
+    前端用 plotly.io.from_json() 反序列化后渲染。
+    """
     if not rows:
         logger.warning("[Viz] 无数据，跳过图表生成")
         return ""
@@ -199,87 +178,133 @@ def generate_chart_base64(rows: list[dict], columns: list[str],
     numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
     category_cols = [c for c in columns if c not in numeric_cols]
 
-    # 紧凑尺寸，适配屏幕
-    fig, ax = plt.subplots(figsize=(7, 3.5))
-
     try:
         if chart_type == "line":
-            _draw_line(ax, df, category_cols, numeric_cols, title)
+            fig = _build_line(df, category_cols, numeric_cols, title)
         elif chart_type == "pie":
-            _draw_pie(ax, df, category_cols, numeric_cols, title)
+            fig = _build_pie(df, category_cols, numeric_cols, title)
         elif chart_type == "scatter":
-            _draw_scatter(ax, df, numeric_cols, title)
+            fig = _build_scatter(df, numeric_cols, title)
         else:
-            _draw_bar(ax, df, category_cols, numeric_cols, title)
+            fig = _build_bar(df, category_cols, numeric_cols, title)
 
-        plt.tight_layout()
-
-        buf = io.BytesIO()
-        fig.savefig(buf, format="png", dpi=120, bbox_inches="tight")
-        buf.seek(0)
-        img_base64 = base64.b64encode(buf.read()).decode("utf-8")
-        buf.close()
-        plt.close(fig)
-
-        logger.info(f"[Viz] 图表生成成功: {chart_type}, base64长度={len(img_base64)}")
-        return img_base64
+        chart_json = fig.to_json()
+        logger.info(f"[Viz] 图表生成成功: {chart_type}, JSON长度={len(chart_json)}")
+        return chart_json
 
     except Exception as e:
         logger.error(f"[Viz] 图表生成失败: {e}")
-        plt.close(fig)
         return ""
 
 
-def _draw_bar(ax, df, category_cols, numeric_cols, title):
-    if category_cols:
-        labels = df[category_cols[0]].astype(str).values
-    else:
-        labels = df.index.astype(str).values
-    x = np.arange(len(labels))
-    width = 0.8 / max(len(numeric_cols[:3]), 1)
-    for i, col in enumerate(numeric_cols[:3]):
-        ax.bar(x + i * width, df[col].values, width, label=col)
-    ax.set_xticks(x + width * (len(numeric_cols[:3]) - 1) / 2)
-    ax.set_xticklabels(labels, rotation=30, ha="right", fontsize=9)
-    ax.set_title(title or "数据对比", fontsize=14, fontweight="bold")
-    ax.legend(loc="best")
-    ax.grid(axis="y", alpha=0.3)
-
-
-def _draw_line(ax, df, category_cols, numeric_cols, title):
-    if category_cols:
-        x = df[category_cols[0]].astype(str).values
-    else:
-        x = np.arange(len(df))
-    for col in numeric_cols[:3]:
-        ax.plot(x, df[col].values, marker="o", linewidth=2, label=col, markersize=5)
-    ax.set_title(title or "趋势分析", fontsize=14, fontweight="bold")
-    ax.legend(loc="best")
-    ax.grid(alpha=0.3)
-    plt.setp(ax.get_xticklabels(), rotation=30, ha="right", fontsize=9)
-
-
-def _draw_pie(ax, df, category_cols, numeric_cols, title):
-    if category_cols:
-        labels = df[category_cols[0]].astype(str).values
-    else:
-        labels = [str(i) for i in range(len(df))]
-    values = df[numeric_cols[0]].values if numeric_cols else np.ones(len(df))
-    values = np.maximum(values, 0)
-    wedges, texts, autotexts = ax.pie(
-        values, labels=labels, autopct="%1.1f%%",
-        startangle=90, pctdistance=0.75
+def _common_layout(fig: go.Figure, title: str) -> go.Figure:
+    """应用统一的商务风格布局"""
+    fig.update_layout(
+        title=dict(text=title or "数据分析", font=dict(size=16, color="#333333")),
+        plot_bgcolor="#FAFAFA",
+        paper_bgcolor="#FFFFFF",
+        margin=dict(l=40, r=20, t=50, b=40),
+        legend=dict(
+            orientation="h", yanchor="bottom", y=1.02,
+            xanchor="right", x=1, font=dict(size=11),
+        ),
+        hovermode="x unified",
+        font=dict(family="Microsoft YaHei, SimHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif"),
     )
-    for t in autotexts:
-        t.set_fontsize(9)
-    ax.set_title(title or "占比分布", fontsize=14, fontweight="bold")
+    fig.update_xaxes(showgrid=True, gridcolor="#E8E8E8", zeroline=False)
+    fig.update_yaxes(showgrid=True, gridcolor="#E8E8E8", zeroline=False)
+    return fig
 
 
-def _draw_scatter(ax, df, numeric_cols, title):
+def _build_bar(df: pd.DataFrame, category_cols: list[str],
+               numeric_cols: list[str], title: str) -> go.Figure:
+    """柱状图 — 支持分组柱状图"""
+    fig = go.Figure()
+
+    if category_cols:
+        labels = df[category_cols[0]].astype(str).tolist()
+    else:
+        labels = [str(i + 1) for i in range(len(df))]
+
+    for i, col in enumerate(numeric_cols[:3]):
+        color = COLORS[i % len(COLORS)]
+        fig.add_trace(go.Bar(
+            name=col, x=labels, y=df[col].tolist(),
+            marker_color=color, text=[f"{v:,.2f}" for v in df[col]],
+            textposition="outside", textfont=dict(size=10),
+            hovertemplate=f"<b>{col}</b><br>%{{x}}: %{{y:,.2f}}<extra></extra>",
+        ))
+
+    fig.update_layout(barmode="group" if len(numeric_cols[:3]) > 1 else "stack")
+    return _common_layout(fig, title or "数据对比")
+
+
+def _build_line(df: pd.DataFrame, category_cols: list[str],
+                numeric_cols: list[str], title: str) -> go.Figure:
+    """折线图 — 支持多系列"""
+    fig = go.Figure()
+
+    if category_cols:
+        x_vals = df[category_cols[0]].astype(str).tolist()
+    else:
+        x_vals = [str(i + 1) for i in range(len(df))]
+
+    for i, col in enumerate(numeric_cols[:3]):
+        color = COLORS[i % len(COLORS)]
+        fig.add_trace(go.Scatter(
+            name=col, x=x_vals, y=df[col].tolist(),
+            mode="lines+markers", line=dict(color=color, width=2.5),
+            marker=dict(size=7, color=color),
+            hovertemplate=f"<b>{col}</b><br>%{{x}}: %{{y:,.2f}}<extra></extra>",
+        ))
+
+    return _common_layout(fig, title or "趋势分析")
+
+
+def _build_pie(df: pd.DataFrame, category_cols: list[str],
+               numeric_cols: list[str], title: str) -> go.Figure:
+    """饼图 / 环形图"""
+    if category_cols:
+        labels = df[category_cols[0]].astype(str).tolist()
+    else:
+        labels = [str(i + 1) for i in range(len(df))]
+
+    values = df[numeric_cols[0]].tolist() if numeric_cols else [1] * len(df)
+    # 确保非负
+    values = [max(v, 0) for v in values]
+
+    fig = go.Figure(data=[go.Pie(
+        labels=labels, values=values,
+        hole=0.35,  # 环形图，更现代
+        marker=dict(colors=COLORS[:len(labels)]),
+        textinfo="percent+label", textfont=dict(size=11),
+        hovertemplate="<b>%{label}</b><br>数值: %{value:,.2f}<br>占比: %{percent}<extra></extra>",
+    )])
+
+    fig.update_layout(
+        title=dict(text=title or "占比分布", font=dict(size=16, color="#333333")),
+        margin=dict(l=20, r=20, t=50, b=20),
+        font=dict(family="Microsoft YaHei, SimHei, PingFang SC, Noto Sans CJK SC, Arial, sans-serif"),
+    )
+    return fig
+
+
+def _build_scatter(df: pd.DataFrame, numeric_cols: list[str], title: str) -> go.Figure:
+    """散点图"""
+    fig = go.Figure()
+
     if len(numeric_cols) >= 2:
-        ax.scatter(df[numeric_cols[0]].values, df[numeric_cols[1]].values,
-                   alpha=0.6, s=50)
-        ax.set_xlabel(numeric_cols[0])
-        ax.set_ylabel(numeric_cols[1])
-    ax.set_title(title or "相关性散点图", fontsize=14, fontweight="bold")
-    ax.grid(alpha=0.3)
+        fig.add_trace(go.Scatter(
+            x=df[numeric_cols[0]].tolist(), y=df[numeric_cols[1]].tolist(),
+            mode="markers", marker=dict(size=10, color=COLORS[0], opacity=0.65, line=dict(width=1, color="#fff")),
+            hovertemplate=f"<b>{numeric_cols[0]}</b>: %{{x:,.2f}}<br><b>{numeric_cols[1]}</b>: %{{y:,.2f}}<extra></extra>",
+        ))
+        fig.update_xaxes(title=numeric_cols[0])
+        fig.update_yaxes(title=numeric_cols[1])
+    else:
+        fig.add_trace(go.Scatter(
+            y=df[numeric_cols[0]].tolist() if numeric_cols else [],
+            mode="markers", marker=dict(size=10, color=COLORS[0], opacity=0.65),
+        ))
+
+    return _common_layout(fig, title or "相关性散点图")

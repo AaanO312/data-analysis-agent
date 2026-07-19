@@ -22,7 +22,7 @@ class ChatResponse(BaseModel):
     """聊天响应 — 严格按需求四字段"""
     sql_text: str = Field(default="", description="生成的 SQL 语句")
     data_table: list[dict[str, Any]] = Field(default_factory=list, description="查询结果数据表")
-    chart_base64: str = Field(default="", description="matplotlib 图表的 base64 编码")
+    chart_json: str = Field(default="", description="Plotly 交互式图表的 JSON 字符串")
     insight: str = Field(default="", description="LLM 生成的业务洞察文字")
 
 

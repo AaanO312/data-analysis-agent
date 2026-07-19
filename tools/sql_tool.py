@@ -1,6 +1,7 @@
 import sqlite3
 import pandas as pd
 import json
+import re
 from utils.logger import logger
 
 
@@ -62,8 +63,13 @@ def csv_to_sqlite(csv_path: str, thread_id: str, table_name: str = None) -> tupl
 def execute_sql(sql: str, thread_id: str) -> tuple[list, list[str]]:
     """
     执行 SQL 查询，返回 (行数据列表, 列名列表)。
-    行数据为 dict 列表。
+    行数据为 dict 列表。自动追加 LIMIT 100 防止内存溢出。
     """
+    # 自动限制返回行数，防止大查询撑爆内存（用词边界避免误匹配含 limit 的表名/列名）
+    if not re.search(r'\bLIMIT\b', sql, re.IGNORECASE):
+        sql = f"{sql.strip().rstrip(';')} LIMIT 100"
+        logger.info(f"[DB] 自动追加 LIMIT 100")
+
     conn = get_connection(thread_id)
     logger.info(f"[DB] 执行 SQL:\n{sql}")
 

@@ -179,7 +179,7 @@ async def chat(req: ChatRequest, request: Request):
         return ChatResponse(
             sql_text=state.get("generated_sql", ""),
             data_table=data_table,
-            chart_base64=state.get("chart_base64", ""),
+            chart_json=state.get("chart_json", ""),
             insight=state.get("insight_text", ""),
         )
     except Exception as e:
@@ -222,7 +222,7 @@ async def chat_stream(req: ChatRequest, request: Request):
         try:
             for chunk in _graph.stream(state_input, config, stream_mode="values"):
                 sql = chunk.get("generated_sql", "")
-                chart = chunk.get("chart_base64", "")
+                chart = chunk.get("chart_json", "")
                 result_json = chunk.get("query_result_json", "[]")
                 insight = chunk.get("insight_text", "")
                 err = chunk.get("sql_error", "")
@@ -241,7 +241,7 @@ async def chat_stream(req: ChatRequest, request: Request):
                     yield f"data: {json.dumps({'type': 'data', 'table': tbl}, ensure_ascii=False, default=str)}\n\n"
                 if chart and chart != last_chart:
                     last_chart = chart
-                    yield f"data: {json.dumps({'type': 'chart', 'base64': chart}, ensure_ascii=False)}\n\n"
+                    yield f"data: {json.dumps({'type': 'chart', 'json': chart}, ensure_ascii=False)}\n\n"
                 if insight and insight != last_insight:
                     last_insight = insight
                     yield f"data: {json.dumps({'type': 'insight', 'text': insight}, ensure_ascii=False)}\n\n"

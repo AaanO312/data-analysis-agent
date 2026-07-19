@@ -3,11 +3,12 @@ import pandas as pd
 import json
 import os
 import re
+from typing import Any
 from agents.state import AgentState
 from core.model import invoke_llm
 from agents.few_shot import match_examples
 from tools.sql_tool import csv_to_sqlite, execute_sql, explain_sql
-from tools.pandas_tool import analyze_data, choose_chart_type, generate_chart_base64
+from tools.pandas_tool import analyze_data, choose_chart_type, generate_chart_json
 from utils.logger import logger
 
 
@@ -21,7 +22,8 @@ def _load_prompt(name: str) -> str:
 
 # ==================== 节点1：数据理解 ====================
 
-def data_understanding_node(state: AgentState) -> dict:
+def data_understanding_node(state: AgentState) -> dict[str, Any]:
+    """解析上传的CSV文件，生成数据字典，导入SQLite内存库"""
     logger.info("=" * 60)
     logger.info("[数据理解] 开始解析CSV文件...")
     logger.info(f"[数据理解] 文件路径: {state['csv_file_path']}")
@@ -96,7 +98,8 @@ def _build_column_info(df: pd.DataFrame, columns: list[str]) -> str:
 
 # ==================== 节点2：NL2SQL ====================
 
-def nl2sql_node(state: AgentState) -> dict:
+def nl2sql_node(state: AgentState) -> dict[str, Any]:
+    """将用户自然语言问题转换为SQLite查询语句，支持Few-shot匹配和自动重试修正"""
     logger.info("-" * 40)
     logger.info(f"[NL2SQL] 开始转换...")
     logger.info(f"[NL2SQL] 用户问题: {state['user_question']}")
@@ -134,8 +137,15 @@ def nl2sql_node(state: AgentState) -> dict:
             f"请修正上述错误，重新生成正确的SQL。这是第{retry_count}次重试。"
         )
 
-    sql = _extract_sql(invoke_llm(prompt))
-    logger.info(f"[NL2SQL] 生成SQL:\n{sql}")
+    # LLM 调用（带异常保护，防止 API 超时等意外）
+    try:
+        raw_sql = invoke_llm(prompt)
+        sql = _extract_sql(raw_sql)
+        logger.info(f"[NL2SQL] 生成SQL:\n{sql}")
+    except Exception as e:
+        logger.error(f"[NL2SQL] LLM调用失败: {e}")
+        sql = "SELECT * FROM data LIMIT 20"
+        logger.warning(f"[NL2SQL] 使用兜底SQL: {sql}")
 
     return {
         "generated_sql": sql,
@@ -165,7 +175,8 @@ DANGEROUS_KEYWORDS = [
 ]
 
 
-def sql_validator_node(state: AgentState) -> dict:
+def sql_validator_node(state: AgentState) -> dict[str, Any]:
+    """对生成的SQL进行安全校验、格式检查、语法验证和字段校验"""
     sql = state.get("generated_sql", "")
     columns = state.get("columns", [])
     table_name = state.get("table_name", "")
@@ -237,12 +248,17 @@ def _check_fields(sql: str, valid_columns: list[str], table_name: str) -> str:
             continue
         if re.search(rf'\b{re.escape(ident)}\s*\(', sql):
             continue
+        # 标识符不在已知列名中 → 记录潜在错误
+        valid_lower = [c.lower() for c in valid_columns]
+        if ident_lower not in valid_lower:
+            errors.append(f"'{ident}' 不是有效字段，有效字段: {', '.join(valid_columns)}")
     return "; ".join(errors) if errors else ""
 
 
 # ==================== 节点4：分析（SQL执行 + pandas分析） ====================
 
-def analysis_node(state: AgentState) -> dict:
+def analysis_node(state: AgentState) -> dict[str, Any]:
+    """执行SQL查询并对结果做自动统计+LLM深度分析"""
     logger.info("-" * 40)
     logger.info("[分析] 开始执行 SQL 并分析结果...")
 
@@ -293,7 +309,8 @@ def analysis_node(state: AgentState) -> dict:
 
 # ==================== 节点5：可视化 ====================
 
-def visualization_node(state: AgentState) -> dict:
+def visualization_node(state: AgentState) -> dict[str, Any]:
+    """根据查询结果自动选择图表类型并生成Plotly交互式图表"""
     logger.info("-" * 40)
     logger.info("[可视化] 开始生成图表...")
 
@@ -305,29 +322,30 @@ def visualization_node(state: AgentState) -> dict:
         rows = json.loads(query_result_json)
     except json.JSONDecodeError:
         logger.warning("[可视化] 查询结果JSON解析失败")
-        return {"chart_base64": ""}
+        return {"chart_json": ""}
 
     if not rows:
         logger.warning("[可视化] 无数据，跳过图表")
-        return {"chart_base64": ""}
+        return {"chart_json": ""}
 
     chart_type = choose_chart_type(rows, query_columns)
     logger.info(f"[可视化] 自动选择图表类型: {chart_type}")
 
     title = user_question[:30] if user_question else ""
-    chart_base64 = generate_chart_base64(rows, query_columns, chart_type, title)
+    chart_json = generate_chart_json(rows, query_columns, chart_type, title)
 
-    if chart_base64:
-        logger.info(f"[可视化] 图表生成成功, base64长度={len(chart_base64)}")
+    if chart_json:
+        logger.info(f"[可视化] 图表生成成功, JSON长度={len(chart_json)}")
     else:
         logger.warning("[可视化] 图表生成失败")
 
-    return {"chart_base64": chart_base64}
+    return {"chart_json": chart_json}
 
 
 # ==================== 节点6：洞察 ====================
 
-def insight_node(state: AgentState) -> dict:
+def insight_node(state: AgentState) -> dict[str, Any]:
+    """基于分析结果生成业务洞察和可执行建议"""
     logger.info("-" * 40)
     logger.info("[洞察] 开始生成洞察...")
 

@@ -1,8 +1,8 @@
 """通用数据分析 Agent — Streamlit 前端（纯展示层，通过 HTTP 调后端）"""
 import streamlit as st
 import requests
-import base64
 import pandas as pd
+import plotly.io as pio
 import os
 
 BACKEND_URL = os.getenv("BACKEND_URL", "http://localhost:8000")
@@ -31,12 +31,12 @@ if "messages" not in st.session_state:
     st.session_state["messages"] = []
 
 
-def render_chart(b64: str):
-    """渲染 base64 图表（限制宽度，不撑满屏幕）"""
-    if b64:
+def render_chart(chart_json: str):
+    """渲染 Plotly 交互式图表"""
+    if chart_json:
         try:
-            img_bytes = base64.b64decode(b64)
-            st.image(img_bytes, width=650)
+            fig = pio.from_json(chart_json)
+            st.plotly_chart(fig, use_container_width=True)
         except Exception:
             st.warning("图表渲染失败")
 
@@ -145,8 +145,8 @@ for msg in st.session_state["messages"]:
                     st.code(c["sql_text"], language="sql")
             if c.get("data_table"):
                 st.dataframe(pd.DataFrame(c["data_table"]), use_container_width=True)
-            if c.get("chart_base64"):
-                render_chart(c["chart_base64"])
+            if c.get("chart_json"):
+                render_chart(c["chart_json"])
             if c.get("insight"):
                 st.markdown("###  洞察与建议")
                 st.info(c["insight"])
@@ -178,8 +178,8 @@ if question and st.session_state["data_loaded"]:
                             st.code(data["sql_text"], language="sql")
                     if data.get("data_table"):
                         st.dataframe(pd.DataFrame(data["data_table"]), use_container_width=True)
-                    if data.get("chart_base64"):
-                        render_chart(data["chart_base64"])
+                    if data.get("chart_json"):
+                        render_chart(data["chart_json"])
                     if data.get("insight"):
                         st.markdown("###  洞察与建议")
                         st.info(data["insight"])
@@ -190,7 +190,7 @@ if question and st.session_state["data_loaded"]:
                         "content": {
                             "sql_text": data.get("sql_text", ""),
                             "data_table": data.get("data_table", []),
-                            "chart_base64": data.get("chart_base64", ""),
+                            "chart_json": data.get("chart_json", ""),
                             "insight": data.get("insight", ""),
                         },
                     })
