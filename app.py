@@ -106,7 +106,33 @@ with st.sidebar:
         st.session_state["messages"] = []
         st.rerun()
 
-    st.caption("LangGraph + FastAPI 驱动")
+    # 后端状态（先 fetch 再渲染，避免 expander 折叠时不执行）
+    backend_online = False
+    metrics_data = None
+    try:
+        h = requests.get(f"{BACKEND_URL}/health", timeout=3)
+        backend_online = h.status_code == 200
+        if backend_online:
+            metrics_data = requests.get(f"{BACKEND_URL}/metrics", timeout=3).json()
+    except Exception:
+        pass
+
+    with st.expander(" 后端状态", expanded=False):
+        if backend_online and metrics_data:
+            st.success("在线")
+            c = metrics_data["chat"]
+            l = metrics_data["llm"]
+            col1, col2 = st.columns(2)
+            col1.metric("请求", c["total"])
+            col2.metric("耗时", f"{c['avg_duration_ms']:.0f}ms")
+            col1, col2 = st.columns(2)
+            col1.metric("LLM", l["calls"])
+            col2.metric("错误率", f"{l['error_rate']*100:.1f}%")
+            st.caption(f"[API 文档]({BACKEND_URL}/docs)")
+        elif backend_online:
+            st.success("在线")
+        else:
+            st.error("离线")
 
 
 # ==================== 主区域：对话 ====================
@@ -140,54 +166,76 @@ if question and st.session_state["data_loaded"]:
         st.markdown(question)
 
     with st.chat_message("assistant"):
-        with st.spinner(" AI 正在分析…"):
-            try:
-                payload = {
-                    "question": question,
-                    "thread_id": st.session_state["thread_id"],
-                }
-                resp = requests.post(f"{BACKEND_URL}/chat", json=payload, timeout=120)
+        # 动态占位符，随 SSE 事件逐步更新
+        sql_placeholder = st.empty()
+        data_placeholder = st.empty()
+        chart_placeholder = st.empty()
+        insight_placeholder = st.empty()
+        status_placeholder = st.empty()
 
-                if resp.status_code == 200:
-                    data = resp.json()
+        accumulated = {"sql_text": "", "data_table": [], "chart_base64": "", "insight": ""}
 
-                    # SQL
-                    if data.get("sql_text"):
-                        with st.expander(" 生成的 SQL", expanded=False):
-                            st.code(data["sql_text"], language="sql")
+        try:
+            payload = {"question": question, "thread_id": st.session_state["thread_id"]}
+            resp = requests.post(
+                f"{BACKEND_URL}/chat/stream",
+                json=payload, stream=True, timeout=120,
+            )
 
-                    # 表格
-                    if data.get("data_table"):
-                        st.dataframe(pd.DataFrame(data["data_table"]), use_container_width=True)
+            if resp.status_code != 200:
+                st.error(f"请求失败 ({resp.status_code})")
+            else:
+                status_placeholder.caption(" AI 分析中…")
+                for line in resp.iter_lines():
+                    if not line:
+                        continue
+                    line = line.decode("utf-8")
+                    if not line.startswith("data: "):
+                        continue
+                    try:
+                        event = json.loads(line[6:])
+                    except json.JSONDecodeError:
+                        continue
 
-                    # 图表（限制宽度）
-                    if data.get("chart_base64"):
-                        render_chart(data["chart_base64"])
+                    etype = event.get("type")
 
-                    # 洞察
-                    if data.get("insight"):
-                        st.markdown("###  洞察与建议")
-                        st.info(data["insight"])
+                    if etype == "sql":
+                        accumulated["sql_text"] = event["text"]
+                        with sql_placeholder.expander(" 生成的 SQL", expanded=True):
+                            st.code(event["text"], language="sql")
 
-                    st.caption("✅ 分析完成")
+                    elif etype == "data":
+                        accumulated["data_table"] = event.get("table", [])
+                        df = pd.DataFrame(event["table"])
+                        if not df.empty:
+                            data_placeholder.dataframe(df, use_container_width=True)
 
-                    st.session_state["messages"].append({
-                        "role": "assistant",
-                        "content": {
-                            "sql_text": data.get("sql_text", ""),
-                            "data_table": data.get("data_table", []),
-                            "chart_base64": data.get("chart_base64", ""),
-                            "insight": data.get("insight", ""),
-                        },
-                    })
+                    elif etype == "chart":
+                        accumulated["chart_base64"] = event.get("base64", "")
+                        render_chart(event["base64"])
 
-                else:
-                    error_msg = resp.json().get("detail", resp.text) if resp.text else "未知错误"
-                    st.error(f"请求失败 ({resp.status_code}): {error_msg}")
+                    elif etype == "insight":
+                        accumulated["insight"] = event["text"]
+                        insight_placeholder.markdown("###  洞察与建议")
+                        insight_placeholder.info(event["text"])
+                        status_placeholder.caption("✅ 分析完成")
 
-            except requests.exceptions.ConnectionError:
-                st.error(" 无法连接后端。请先启动: uvicorn backend.main:app --reload")
-            except requests.exceptions.Timeout:
-                st.error(" 请求超时（>120秒），请重试")
-            except Exception as e:
-                st.error(f"请求异常: {e}")
+                    elif etype == "error":
+                        status_placeholder.error(event.get("msg", "未知错误"))
+
+                    elif etype == "done":
+                        status_placeholder.caption("✅ 分析完成")
+
+                status_placeholder.caption("✅ 分析完成")
+
+            st.session_state["messages"].append({
+                "role": "assistant",
+                "content": accumulated,
+            })
+
+        except requests.exceptions.ConnectionError:
+            st.error(" 无法连接后端")
+        except requests.exceptions.Timeout:
+            st.error(" 请求超时")
+        except Exception as e:
+            st.error(f"请求异常: {e}")

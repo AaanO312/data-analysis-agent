@@ -3,10 +3,10 @@ import os
 import json
 import uuid
 import time
-import hashlib
+import asyncio
 import pandas as pd
 from fastapi import FastAPI, Request, UploadFile, File, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from fastapi.middleware.cors import CORSMiddleware
 from schemas.agent import ChatRequest, ChatResponse, UploadResponse
 from tools.sql_tool import csv_to_sqlite
@@ -185,6 +185,76 @@ async def chat(req: ChatRequest, request: Request):
     except Exception as e:
         metrics.record_chat(time.time() - t0, error=True)
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ── 流式对话（SSE）──
+@app.post("/chat/stream")
+async def chat_stream(req: ChatRequest, request: Request):
+    client_ip = request.client.host if request.client else "unknown"
+    if not _check_rate_limit(client_ip):
+        metrics.record_rate_limited()
+        raise HTTPException(status_code=429, detail="请求过快")
+
+    thread_id = req.thread_id
+    session = get_session(_session_state, thread_id)
+    if not session:
+        raise HTTPException(status_code=400, detail="无效的 thread_id")
+
+    config = {"configurable": {"thread_id": thread_id}}
+    conversation_history = session.get("conversation_history", "")
+    state_input = {
+        "user_question": req.question,
+        "csv_file_path": session["csv_file_path"],
+        "thread_id": thread_id,
+        "table_name": session["table_name"],
+        "columns": session["columns"],
+        "data_dict": session["data_dict"],
+        "conversation_history": conversation_history,
+        "sql_retry_count": 0, "sql_valid": False, "sql_error": "",
+    }
+
+    async def event_stream():
+        t0 = time.time()
+        last_sql = ""
+        last_chart = ""
+        last_data = ""
+        last_insight = ""
+        try:
+            for chunk in _graph.stream(state_input, config, stream_mode="values"):
+                sql = chunk.get("generated_sql", "")
+                chart = chunk.get("chart_base64", "")
+                result_json = chunk.get("query_result_json", "[]")
+                insight = chunk.get("insight_text", "")
+                err = chunk.get("sql_error", "")
+
+                if err:
+                    yield f"data: {json.dumps({'type': 'error', 'msg': err}, ensure_ascii=False)}\n\n"
+                if sql and sql != last_sql:
+                    last_sql = sql
+                    yield f"data: {json.dumps({'type': 'sql', 'text': sql}, ensure_ascii=False)}\n\n"
+                if result_json and result_json != last_data:
+                    last_data = result_json
+                    try:
+                        tbl = json.loads(result_json)
+                    except Exception:
+                        tbl = []
+                    yield f"data: {json.dumps({'type': 'data', 'table': tbl}, ensure_ascii=False, default=str)}\n\n"
+                if chart and chart != last_chart:
+                    last_chart = chart
+                    yield f"data: {json.dumps({'type': 'chart', 'base64': chart}, ensure_ascii=False)}\n\n"
+                if insight and insight != last_insight:
+                    last_insight = insight
+                    yield f"data: {json.dumps({'type': 'insight', 'text': insight}, ensure_ascii=False)}\n\n"
+
+            metrics.record_chat(time.time() - t0, error=False)
+            update_conversation(_session_state, thread_id, req.question, last_insight)
+            yield "data: {\"type\": \"done\"}\n\n"
+
+        except Exception as e:
+            metrics.record_chat(time.time() - t0, error=True)
+            yield f"data: {json.dumps({'type': 'error', 'msg': str(e)}, ensure_ascii=False)}\n\n"
+
+    return StreamingResponse(event_stream(), media_type="text/event-stream")
 
 
 def _build_basic_data_dict(df: pd.DataFrame, columns: list[str]) -> str:
